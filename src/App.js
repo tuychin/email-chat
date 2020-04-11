@@ -6,7 +6,6 @@ import {
 } from 'react-router-dom';
 import PrivateRoute from './hocs/withPrivateRoute';
 import PublicRoute from './hocs/withPublicRoute';
-import Home from './pages/Home';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import { auth } from './services/firebase';
@@ -44,8 +43,7 @@ export default class App extends Component {
         return loading ? <h2>Loading...</h2> : (
             <Router>
                 <Switch>
-                    <PublicRoute exact path="/" authenticated={authenticated} component={Home}></PublicRoute>
-                    <PublicRoute path="/login" authenticated={authenticated} component={Login}></PublicRoute>
+                    <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
                     <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
                     <Route render={() => (
                         <div className="jumbotron text-center">
