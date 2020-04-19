@@ -1,0 +1,9 @@
+.messages {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    border: 3px solid grey;
+    overflow-y: scroll;
+}

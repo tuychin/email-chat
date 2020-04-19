@@ -1,6 +1,6 @@
 import { auth } from '../services/firebase';
 
-export function confirmEmail(email) {
+export function sendConfirmEmail(email) {
     var actionCodeSettings = {
         url: 'http://localhost:8080',
         handleCodeInApp: true,
@@ -14,7 +14,7 @@ export function confirmEmail(email) {
         });
 }
 
-export function checkEmail() {
+export function checkConfirmEmail() {
     if (auth().isSignInWithEmailLink(window.location.href)) {
         var email = window.localStorage.getItem('emailForSignIn');
 

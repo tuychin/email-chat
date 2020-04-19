@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { confirmEmail, signInWithGoogle, signInWithGitHub } from '../../helpers/auth';
+import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../helpers/auth';
 
 import Confirm from '../../components/Confirm';
 
@@ -21,13 +20,14 @@ export default class Login extends Component {
         const {email} = this.state;
 
         event.preventDefault();
-        this.setState({ error: '' });
+        this.setState({error: ''});
 
         try {
-            await confirmEmail(email);
-            this.setState({ showConfirm: true });
+            await sendConfirmEmail(email);
+            this.setState({showConfirm: true});
         } catch (error) {
-            this.setState({ error: error.message });
+            console.log(error);
+            this.setState({error: error.message});
         }
     }
 
@@ -35,7 +35,8 @@ export default class Login extends Component {
         try {
             await signInWithGoogle();
         } catch (error) {
-            this.setState({ error: error.message });
+            console.log(error);
+            this.setState({error: error.message});
         }
     }
 
@@ -43,19 +44,24 @@ export default class Login extends Component {
         try {
             await signInWithGitHub();
         } catch (error) {
-            this.setState({ error: error.message });
+            console.log(error);
+            this.setState({error: error.message});
         }
     }
 
     render() {
-        const {showConfirm, email} = this.state;
+        const {
+            showConfirm,
+            email,
+            error,
+        } = this.state;
 
         return (
             showConfirm ? <Confirm email={email} /> : (
                 <div>
                     <form onSubmit={this.handleSubmit}>
-                        <h1> Login to <Link to="/"> Email-chat </Link></h1>
-                        <p>Fill in the form below to login to your account.</p>
+                        <h1>Добро пожаловать в Email-chat</h1>
+                        <p>Всё что вам нужно, чтобы начать - электронная почта!</p>
     
                         <div>
                             <input
@@ -63,18 +69,18 @@ export default class Login extends Component {
                                 name="email"
                                 type="email"
                                 onChange={this.handleChange}
-                                value={this.state.email}
+                                value={email}
                             />
                         </div>
     
                         <div>
-                            {this.state.error ? (<p>{this.state.error}</p>) : null}
-                            <button type="submit">Login</button>
+                            {error ? (<p>{error}</p>) : null}
+                            <button type="submit">Войти</button>
     
-                            <p>You can also login with any of these services</p>
+                            <p>Для входа вы можете использовать эти сервисы:</p>
     
-                            <button onClick={this.googleSignIn} type="button">Login with Google</button>
-                            <button type="button" onClick={this.githubSignIn}>Login with GitHub</button>
+                            <button onClick={this.googleSignIn} type="button">Войти с Google</button>
+                            <button type="button" onClick={this.githubSignIn}>Войти с GitHub</button>
                         </div>
                     </form>
                 </div>

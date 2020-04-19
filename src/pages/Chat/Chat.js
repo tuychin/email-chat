@@ -1,99 +1,86 @@
-import React, { Component } from 'react';
-import getTimeNow from '../../helpers/getTimeNow';
+import React, {Component} from 'react';
+import getCurrentTime from '../../helpers/getCurrentTime';
 import { Link } from 'react-router-dom';
-import { auth } from '../../services/firebase';
-import { db } from '../../services/firebase';
-import { signOut } from '../../helpers/auth';
+import {signOut} from '../../helpers/auth';
+import {auth} from '../../services/firebase';
+import {db} from '../../services/firebase';
+
+import MessageHistory from '../../components/MessageHistory';
+import Dialogs from '../../components/Dialogs';
 
 import './chat.css';
 
 export default class Chat extends Component {
     state = {
         user: auth().currentUser,
-        chats: [],
-        content: '',
-        readError: null,
-        writeError: null
+        messages: [],
+        error: null,
     };
 
     async componentDidMount() {
-        this.setState({ readError: null });
+        this.getMessages();
+    }
 
+    getMessages = () => {
+        this.setState({error: null});
         try {
-            db.ref('chats').on('value', snapshot => {
-                let chats = [];
+            db.ref('messages').on('value', snapshot => {
+                let messages = [];
 
                 snapshot.forEach((snap) => {
-                    chats.push(snap.val());
+                    messages.push(snap.val());
                 });
 
-                this.setState({ chats });
+                this.setState({messages});
             });
         } catch (error) {
-            this.setState({ readError: error.message });
+            console.log(error);
+            this.setState({error: error.message});
         }
     }
 
-    handleChange = (event) => {
-        this.setState({
-            content: event.target.value
-        });
-    }
+    submitMessage = async (content) => {
+        const {user} =this.state;
 
-    handleSubmit = async (event) => {
-        event.preventDefault();
-        this.setState({ writeError: null });
-
+        this.setState({error: null});
         try {
-            await db.ref('chats').push({
-                content: this.state.content,
-                time: getTimeNow(),
+            await db.ref('messages').push({
+                content: content,
+                date_time: getCurrentTime(),
                 time_stamp: Date.now(),
-                user_id: this.state.user.uid,
-                user_email: this.state.user.email
+                user_id: user.uid,
+                user_email: user.email
             });
-
-            this.setState({ content: '' });
         } catch (error) {
-            this.setState({ writeError: error.message });
+            console.log(error);
+            console.log(111);
+            this.setState({error: error.message});
         }
     }
 
     render() {
+        const {
+            user,
+            messages,
+            error,
+        } = this.state;
+
         return (
             <div>
                 <h1><Link to="/"> Email-chat </Link></h1>
-                <div className="chats">
-                    {this.state.chats.map(({
-                        content,
-                        time,
-                        time_stamp,
-                        user_id,
-                        user_email,
-                    }) => (
-                        <div
-                            key={time_stamp}
-                            className={user_id === this.state.user.uid ? '_right' : ''}
-                        >
-                            <span>{user_email}</span>
-                            <br />
-                            <span>{content}</span>
-                            <br />
-                            <span>{time}</span>
-                            <hr />
-                        </div>
-                    ))}
+                <div className="row">
+                    <Dialogs />
+                    <MessageHistory
+                        user={user}
+                        messages={messages}
+                        submit={this.submitMessage}
+                        signOut={signOut}
+                        error={error}
+                    />
                 </div>
-
-                <form onSubmit={this.handleSubmit}>
-                    <input onChange={this.handleChange} value={this.state.content}></input>
-                    {this.state.error ? <p>{this.state.writeError}</p> : null}
-                    <button type="submit">Send</button>
-                </form>
-
                 <div>
-                    Login in as: <strong>{this.state.user.email}</strong>
-                    <Link to="/" onClick={signOut}> Exit </Link>
+                    Вход выполнен через: <strong>{user.email}</strong>
+                    <Link to="/" onClick={signOut}> Выйти </Link>
                 </div>
             </div>
         );

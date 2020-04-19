@@ -9,7 +9,7 @@ import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import { auth } from './services/firebase';
-import { checkEmail } from './helpers/auth';
+import { checkConfirmEmail } from './helpers/auth';
 
 import 'bootswatch/dist/solar/bootstrap.min.css';
 
@@ -20,8 +20,11 @@ export default class App extends Component {
     };
 
     async componentDidMount() {
-        await checkEmail();
+        await checkConfirmEmail();
+        this.checkAuth();
+    }
 
+    checkAuth = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 this.setState({
