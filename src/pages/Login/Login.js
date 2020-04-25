@@ -26,7 +26,7 @@ export default class Login extends Component {
             await sendConfirmEmail(email);
             this.setState({showConfirm: true});
         } catch (error) {
-            console.log(error);
+            console.error(error);
             this.setState({error: error.message});
         }
     }
@@ -35,7 +35,7 @@ export default class Login extends Component {
         try {
             await signInWithGoogle();
         } catch (error) {
-            console.log(error);
+            console.error(error);
             this.setState({error: error.message});
         }
     }
@@ -44,7 +44,7 @@ export default class Login extends Component {
         try {
             await signInWithGitHub();
         } catch (error) {
-            console.log(error);
+            console.error(error);
             this.setState({error: error.message});
         }
     }

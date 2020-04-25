@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import getCurrentTime from '../../helpers/getCurrentTime';
 import { Link } from 'react-router-dom';
-import {signOut} from '../../helpers/auth';
-import {auth} from '../../services/firebase';
-import {db} from '../../services/firebase';
+import { signOut } from '../../helpers/auth';
+import { auth } from '../../services/firebase';
+import { db } from '../../services/firebase';
 
 import MessageHistory from '../../components/MessageHistory';
 import Dialogs from '../../components/Dialogs';
@@ -12,7 +12,9 @@ import './chat.css';
 
 export default class Chat extends Component {
     state = {
-        user: auth().currentUser,
+        currentUser: auth().currentUser,
+        currentDialog: '',
+        dialogs: [],
         messages: [],
         error: null,
     };
@@ -34,13 +36,13 @@ export default class Chat extends Component {
                 this.setState({messages});
             });
         } catch (error) {
-            console.log(error);
+            console.error(error);
             this.setState({error: error.message});
         }
     }
 
-    submitMessage = async (content) => {
-        const {user} =this.state;
+    sendMessage = async (content) => {
+        const {currentUser} =this.state;
 
         this.setState({error: null});
         try {
@@ -48,19 +50,19 @@ export default class Chat extends Component {
                 content: content,
                 date_time: getCurrentTime(),
                 time_stamp: Date.now(),
-                user_id: user.uid,
-                user_email: user.email
+                user_id: currentUser.uid,
+                user_email: currentUser.email
             });
         } catch (error) {
-            console.log(error);
-            console.log(111);
+            console.error(error);
             this.setState({error: error.message});
         }
     }
 
     render() {
         const {
-            user,
+            currentUser,
+            currentDialog,
             messages,
             error,
         } = this.state;
@@ -71,15 +73,16 @@ export default class Chat extends Component {
                 <div className="row">
                     <Dialogs />
                     <MessageHistory
-                        user={user}
+                        user={currentUser}
+                        dialog={currentDialog}
                         messages={messages}
-                        submit={this.submitMessage}
+                        submit={this.sendMessage}
                         signOut={signOut}
                         error={error}
                     />
                 </div>
                 <div>
-                    Вход выполнен через: <strong>{user.email}</strong>
+                    Вход выполнен через: <strong>{currentUser.email}</strong>
                     <Link to="/" onClick={signOut}> Выйти </Link>
                 </div>
             </div>
