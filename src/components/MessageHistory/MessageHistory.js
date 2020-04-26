@@ -9,19 +9,23 @@ export default class MessageHistory extends Component {
     }
 
     static propTypes = {
+        dialog: PropTypes.string,
+        messages: PropTypes.array,
         user: PropTypes.object.isRequired,
-        messages: PropTypes.array.isRequired,
         submit: PropTypes.func.isRequired,
+        signOut: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
-        dialog: false,
+        dialog: '',
+        messages: [],
+        alert: null,
         error: null,
     }
 
     сheckNoLetters = (str) => str.trim() === '';
 
-    handleSubmit = async (event) => {
+    sendMessage = async (event) => {
         event.preventDefault();
         const {content} = this.state;
         const {submit} = this.props;
@@ -45,18 +49,20 @@ export default class MessageHistory extends Component {
             user,
             dialog,
             messages,
+            alert,
             error,
         } = this.props;
 
         return (
             !dialog ? (
-                <div className="vh-80 d-flex justify-content-center align-items-center col-md-8">
+                <div className="vh-100 d-flex flex-column justify-content-center align-items-center col-md-8 border">
                     <h2>Выберите, кому хотели бы написать</h2>
                 </div>
             ) : (
-                <div className="col-md-8">
+                <div className="vh-100 d-flex justify-content-end align-items-end flex-column col-md-8 border overflow-auto">
                     <div className="messages">
                         {messages.map(({
+                            message_id,
                             content,
                             date_time,
                             time_stamp,
@@ -64,25 +70,27 @@ export default class MessageHistory extends Component {
                             user_email,
                         }) => (
                             <div
-                                key={time_stamp}
+                                key={`message_${time_stamp}`}
                                 className={user_id === user.uid ? '_right' : ''}
+                                data-message-id={message_id}
                             >
-                                <span>{user_email}</span>
+                                <span key={`email_${time_stamp}`}>{user_email}</span>
                                 <br />
-                                <span>{content}</span>
+                                <span key={`content_${time_stamp}`}>{content}</span>
                                 <br />
-                                <span>{date_time}</span>
+                                <span key={`date_${time_stamp}`}>{date_time}</span>
                                 <hr />
                             </div>
                         ))}
                     </div>
 
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.sendMessage}>
                         <input
                             onChange={this.handleChange}
                             value={content}
                             placeholder="Сообщение"
                         />
+                        {alert ? <p>{alert}</p> : null}
                         {error ? <p>{error}</p> : null}
                         <button type="submit">Отправить</button>
                     </form>
