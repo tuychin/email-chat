@@ -71,6 +71,7 @@ class Dialogs extends Component {
                         onChange={this.handleChange}
                         value={email}
                         placeholder="email"
+                        required
                     />
                     {alert ? <p>{alert}</p> : null}
                     {error ? <p>{error}</p> : null}

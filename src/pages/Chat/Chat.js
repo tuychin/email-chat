@@ -24,50 +24,99 @@ export default class Chat extends Component {
 
     componentDidMount() {
         this.getDialogs();
-        db.ref('users')
-            .startAt('example@gmail.com') 
-            .endAt('example@gmail.com') 
-            .once('value', function(snap) {
-                console.log('accounts matching email address', snap.val())
-            })
     }
 
     createDialog = async (email) => {
-        const {currentUser} =this.state;
-
         this.setState({dialogsError: null});
 
-        try {
-            await db.ref('dialogs')
-                .push(true)
-                .then((res) => {
-                    this.setState({currentDialog: res.key});
-                    this.getMessages(res.key);
-                });
+        db.ref('users')
+            .orderByChild('email')
+            .equalTo(email)
+            .once('value',  snapshot => {
 
-            /**add dialog to another user by email */
+                /**check user exist */
+                if (snapshot.exists()) {
+                    console.warn('User exist');
+                    this.setState({dialogsAlert: null})
+                    try {
+                        this.setState({dialogsError: null});
+
+                        /**add dialog to /dialogs */
+                        db.ref('dialogs')
+                            .push(true)
+                            .then((res) => {
+                                this.setState({currentDialog: res.key});
+                                this.getMessages(res.key);
+                            })
+                            .then(() => {
+                                this.addDialogToAnotherUser(email);
+                            })
+                            .then(() => {
+                                this.addDialogToCurrentUser(email);
+                            })
+                            .catch((error) => {
+                                console.error(error);
+                                this.setState({dialogsError: error.message});
+                            });
+            
+                    } catch (error) {
+                        console.error(error);
+                        this.setState({dialogsError: error.message});
+                    }
+                } else {
+                    this.setState({dialogsAlert: 'Данный пользователь не зарегистрирован'});
+                    console.warn('User not exist');
+                }
+
+            });
+    }
+
+    addDialogToCurrentUser = async (anotherUserEmail) => {
+        const {currentDialog, currentUser} = this.state;
+
+        try {
+            await db.ref(`users/${currentUser.uid}/dialogs`)
+                .child(currentDialog)
+                .set({
+                    dialogId: currentDialog,
+                    member: anotherUserEmail,
+                });
+        } catch (error) {
+            console.error(error);
+            this.setState({dialogsError: error.message});
+        }
+    }
+
+    addDialogToAnotherUser = async (userId) => {
+
+        try {
+
+        } catch (error) {
+            console.error(error);
+            this.setState({dialogsError: error.message});
+        }
+    }
+
+    addDialogToAnotherUser = async (email) => {
+        const {currentDialog, currentUser} = this.state;
+
+        try {
+            /**get user id by email */
             await db.ref('users')
                 .orderByChild('email')
                 .equalTo(email)
                 .on('child_added',  snapshot => {
-                    const anotherUserId = snapshot.key;
-
-                    db.ref(`users/${anotherUserId}/dialogs`)
-                        .child(this.state.currentDialog)
+                    const userId = snapshot.key;
+                    
+                    if (!userId) throw new Error('Id is undefined');
+        
+                    db.ref(`users/${userId}/dialogs`)
+                        .child(currentDialog)
                         .set({
-                            dialogId: this.state.currentDialog,
+                            dialogId: currentDialog,
                             member: currentUser.email,
                         });
                 });
-
-            /**add dialog to current user */
-            await db.ref(`users/${currentUser.uid}/dialogs`)
-                .child(this.state.currentDialog)
-                .set({
-                    dialogId: this.state.currentDialog,
-                    member: email,
-                });
-
         } catch (error) {
             console.error(error);
             this.setState({dialogsError: error.message});
@@ -127,11 +176,11 @@ export default class Chat extends Component {
     getMessages = (dialogId) => {
         const {currentDialog} =this.state;
 
-        if (currentDialog || dialogId) {
+        if (dialogId || currentDialog) {
             this.setState({messagesError: null});
 
             try {
-                db.ref(`dialogs/${currentDialog || dialogId}`)
+                db.ref(`dialogs/${dialogId || currentDialog}`)
                     .on('value', snapshot => {
                         let messages = [];
         
