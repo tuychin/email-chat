@@ -50,11 +50,11 @@ export default class MessageHistory extends Component {
 
         return (
             !dialog ? (
-                <div className="vh-100 d-flex justify-content-center align-items-center col-md-6">
+                <div className="vh-80 d-flex justify-content-center align-items-center col-md-8">
                     <h2>Выберите, кому хотели бы написать</h2>
                 </div>
             ) : (
-                <div className="col-md-6">
+                <div className="col-md-8">
                     <div className="messages">
                         {messages.map(({
                             content,

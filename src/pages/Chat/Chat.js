@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import getCurrentTime from '../../helpers/getCurrentTime';
 import { Link } from 'react-router-dom';
 import { signOut } from '../../helpers/auth';
@@ -19,34 +19,72 @@ export default class Chat extends Component {
         error: null,
     };
 
-    async componentDidMount() {
-        this.getMessages();
-    }
+    createDialog = async (email) => {
+        const {currentUser} =this.state;
 
-    getMessages = () => {
         this.setState({error: null});
-        try {
-            db.ref('messages').on('value', snapshot => {
-                let messages = [];
 
-                snapshot.forEach((snap) => {
-                    messages.push(snap.val());
+        try {
+            await db.ref('dialogs')
+                .push(true)
+                .then((res) => {
+                    this.setState({currentDialog: res.key});
+                    this.getMessages();
                 });
 
-                this.setState({messages});
-            });
+            /**add dialog to current user */
+            await db.ref(`users/${currentUser.uid}/dialogs`)
+                .child(this.state.currentDialog)
+                .set({member: email});
+
+            /**add dialog to another user by email */
+            await db.ref('users')
+                .orderByChild('email')
+                .equalTo(email)
+                .on('child_added',  snapshot => {
+                    const anotherUserId = snapshot.key;
+
+                    db.ref(`users/${anotherUserId}/dialogs`)
+                        .child(this.state.currentDialog)
+                        .set({member: currentUser.email});
+                });
+
         } catch (error) {
             console.error(error);
             this.setState({error: error.message});
         }
     }
 
+    getMessages = () => {
+        const {currentDialog} =this.state;
+
+        if (currentDialog) {
+            this.setState({error: null});
+
+            try {
+                db.ref(`dialogs/${currentDialog}`).on('value', snapshot => {
+                    let messages = [];
+    
+                    snapshot.forEach((snap) => {
+                        messages.push(snap.val());
+                    });
+    
+                    this.setState({messages});
+                });
+            } catch (error) {
+                console.error(error);
+                this.setState({error: error.message});
+            }
+        }
+    }
+
     sendMessage = async (content) => {
-        const {currentUser} =this.state;
+        const {currentUser, currentDialog} =this.state;
 
         this.setState({error: null});
+
         try {
-            await db.ref('messages').push({
+            await db.ref(`dialogs/${currentDialog}`).push({
                 content: content,
                 date_time: getCurrentTime(),
                 time_stamp: Date.now(),
@@ -71,7 +109,9 @@ export default class Chat extends Component {
             <div>
                 <h1><Link to="/"> Email-chat </Link></h1>
                 <div className="row">
-                    <Dialogs />
+                    <Dialogs
+                        createDialog={this.createDialog}
+                    />
                     <MessageHistory
                         user={currentUser}
                         dialog={currentDialog}

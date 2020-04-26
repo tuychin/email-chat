@@ -51,7 +51,7 @@ export function signOut() {
 }
 
 
-/** utility functions */
+/**utility functions */
 
 async function addNewUser(res) {
     const {user, additionalUserInfo} = res;
