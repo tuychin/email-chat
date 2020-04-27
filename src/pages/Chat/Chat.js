@@ -29,6 +29,8 @@ export default class Chat extends Component {
     createDialog = async (email) => {
         this.setState({dialogsError: null});
 
+        if (this.checkDialogExist(email)) return;
+
         db.ref('users')
             .orderByChild('email')
             .equalTo(email)
@@ -71,6 +73,21 @@ export default class Chat extends Component {
             });
     }
 
+    checkDialogExist = (email) => {
+        const {dialogs} = this.state;
+        let isDialogAlredyExist = false;
+
+        dialogs.forEach(dialog => {
+            if (dialog.member === email) {
+                isDialogAlredyExist = true;
+                this.selectDialog(dialog.dialogId);
+                this.setState({dialogsAlert: 'Такой диалог уже существует'})
+            }
+        });
+
+        return isDialogAlredyExist;
+    }
+
     addDialogToCurrentUser = async (anotherUserEmail) => {
         const {currentDialog, currentUser} = this.state;
 
@@ -81,16 +98,6 @@ export default class Chat extends Component {
                     dialogId: currentDialog,
                     member: anotherUserEmail,
                 });
-        } catch (error) {
-            console.error(error);
-            this.setState({dialogsError: error.message});
-        }
-    }
-
-    addDialogToAnotherUser = async (userId) => {
-
-        try {
-
         } catch (error) {
             console.error(error);
             this.setState({dialogsError: error.message});
