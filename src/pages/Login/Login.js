@@ -3,6 +3,10 @@ import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../help
 
 import Confirm from '../../components/Confirm';
 
+const Bevis = require('bevis');
+
+const block = new Bevis('login');
+
 export default class Login extends Component {
     state = {
         error: null,
@@ -58,7 +62,7 @@ export default class Login extends Component {
 
         return (
             showConfirm ? <Confirm email={email} /> : (
-                <div>
+                <div className={block.name()}>
                     <form onSubmit={this.handleSubmit}>
                         <h1>Добро пожаловать в Email-chat</h1>
                         <p>Всё что вам нужно, чтобы начать - электронная почта!</p>

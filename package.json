@@ -25,6 +25,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "bevis": "^0.1.1",
     "bootswatch": "^4.4.1",
     "firebase": "^7.13.2",
     "prop-types": "^15.7.2",

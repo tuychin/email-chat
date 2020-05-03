@@ -10,6 +10,10 @@ import Dialogs from '../../components/Dialogs';
 
 import './chat.css';
 
+const Bevis = require('bevis');
+
+const block = new Bevis('chat');
+
 export default class Chat extends Component {
     state = {
         currentUser: auth().currentUser,
@@ -217,7 +221,7 @@ export default class Chat extends Component {
         } = this.state;
 
         return (
-            <div>
+            <div className={block.name()}>
                 <div className="container">
                     <div className="row">
                         <Dialogs

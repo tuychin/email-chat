@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 
 import './confirm.css';
 
+const Bevis = require('bevis');
+
+const block = new Bevis('confirm');
+
 class Confirm extends Component {
     render() {
         const {email} = this.props;

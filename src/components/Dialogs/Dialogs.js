@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
+import './dialogs.css';
+
+const Bevis = require('bevis');
+
+const block = new Bevis('dialogs');
+
 class Dialogs extends Component {
     state = {
         email: '',
@@ -51,34 +57,36 @@ class Dialogs extends Component {
         } = this.props;
 
         return (
-            <div className="vh-100 d-flex flex-column justify-content-between align-items-center col-md-4 border">
-                <div className="d-flex flex-column">
-                    {dialogs && 
-                        dialogs.map(dialog => (
-                            <button
-                                className="btn btn-outline-secondary"
-                                onClick={this.selectDialog}
-                                data-dialog-id={dialog.dialogId}
-                                key={dialog.dialogId}
-                            >
-                                {dialog.member}
-                            </button>
-                        ))
-                    }
+            <div className={block.name()}>
+                <div className="vh-100 d-flex flex-column justify-content-between align-items-center col-md-4 border">
+                    <div className="d-flex flex-column">
+                        {dialogs && 
+                            dialogs.map(dialog => (
+                                <button
+                                    className="btn btn-outline-secondary"
+                                    onClick={this.selectDialog}
+                                    data-dialog-id={dialog.dialogId}
+                                    key={dialog.dialogId}
+                                >
+                                    {dialog.member}
+                                </button>
+                            ))
+                        }
+                    </div>
+                    <form onSubmit={this.createDialog}>
+                        <input
+                            onChange={this.handleChange}
+                            value={email}
+                            placeholder="email"
+                            required
+                        />
+                        {alert ? <p>{alert}</p> : null}
+                        {error ? <p>{error}</p> : null}
+                        <button type="submit">
+                            Создать диалог
+                        </button>
+                    </form>
                 </div>
-                <form onSubmit={this.createDialog}>
-                    <input
-                        onChange={this.handleChange}
-                        value={email}
-                        placeholder="email"
-                        required
-                    />
-                    {alert ? <p>{alert}</p> : null}
-                    {error ? <p>{error}</p> : null}
-                    <button type="submit">
-                        Создать диалог
-                    </button>
-                </form>
             </div>
         );
     }
