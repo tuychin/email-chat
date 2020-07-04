@@ -22,7 +22,6 @@ class Dialogs extends Component {
     static defaultProps = {
         dialogs: [],
         currentDialog: '',
-        alert: null,
         error: null,
     }
 
@@ -53,12 +52,31 @@ class Dialogs extends Component {
         const {email} = this.state;
         const {
             dialogs,
-            alert,
             error,
         } = this.props;
 
         return (
             <div className={`${block.name()} container`}>
+                <form
+                    className={`${block.elem('form')} form-group`}
+                    onSubmit={this.createDialog}
+                >
+                    <input
+                        className={`${block.elem('input')} form-control`}
+                        onChange={this.handleChange}
+                        value={email}
+                        placeholder="email"
+                        required
+                    />
+                    {error ? <p>{error}</p> : null}
+                    <button
+                        className={`${block.elem('button')} btn btn-primary`}
+                        type="submit"
+                    >
+                        Создать диалог
+                    </button>
+                </form>
+
                 {dialogs && (
                     <div className={`${block.elem('list')} list-group`}>
                         {dialogs.map(dialog => (
@@ -74,21 +92,6 @@ class Dialogs extends Component {
                         ))}
                     </div>
                 )}
-
-                <form className={`${block.elem('form')} form-group`} onSubmit={this.createDialog}>
-                    <input
-                        className={`${block.elem('input')} form-control`}
-                        onChange={this.handleChange}
-                        value={email}
-                        placeholder="email"
-                        required
-                    />
-                    {alert ? <p>{alert}</p> : null}
-                    {error ? <p>{error}</p> : null}
-                    <button className={`${block.elem('button')} btn btn-primary`} type="submit">
-                        Создать диалог
-                    </button>
-                </form>
             </div>
         );
     }

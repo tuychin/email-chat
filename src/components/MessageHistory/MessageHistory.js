@@ -23,7 +23,6 @@ export default class MessageHistory extends Component {
     static defaultProps = {
         dialog: '',
         messages: [],
-        alert: null,
         error: null,
     }
 
@@ -53,7 +52,6 @@ export default class MessageHistory extends Component {
             user,
             dialog,
             messages,
-            alert,
             error,
         } = this.props;
 
@@ -64,40 +62,63 @@ export default class MessageHistory extends Component {
                         <h2>Выберите, кому хотели бы написать</h2>
                     </div>
                 ) : (
-                    <div className="vh-100 d-flex justify-content-end align-items-end flex-column overflow-auto">
+                    <div className={block.elem('inner')}>
                         <div className={`${block.elem('messages')}`}>
-                            {messages.map(({
-                                message_id,
-                                content,
-                                date_time,
-                                time_stamp,
-                                user_id,
-                                user_email,
-                            }) => (
-                                <div
-                                    className={block.elem('message', user_id === user.uid ? 'right' : '')}
-                                    data-message-id={message_id}
-                                    key={`message_${time_stamp}`}
-                                >
-                                    <span key={`email_${time_stamp}`}>{user_email}</span>
-                                    <br />
-                                    <span key={`content_${time_stamp}`}>{content}</span>
-                                    <br />
-                                    <span key={`date_${time_stamp}`}>{date_time}</span>
-                                    <hr />
-                                </div>
-                            ))}
+                            <div className={`${block.elem('messages-scroll')}`}>
+                                {messages.map(({
+                                    message_id,
+                                    content,
+                                    date_time,
+                                    time_stamp,
+                                    user_id,
+                                    user_email,
+                                }) => (
+                                    <div
+                                        className={block.elem('message', user_id === user.uid ? 'right' : '')}
+                                        data-message-id={message_id}
+                                        key={`message_${time_stamp}`}
+                                    >
+                                        <div
+                                            className={`${block.elem('message-inner')} card text-white
+                                                ${user_id === user.uid ? 'bg-success' : 'bg-info'}`}
+                                        >
+                                            <div className="card-header">
+                                                {user_email}
+                                            </div>
+                                            <div className="card-body">
+                                                <p className="card-text">
+                                                    {content}
+                                                </p>
+                                                <span
+                                                    className={`badge
+                                                        ${user_id === user.uid ? 'badge-success' : 'badge-info'}`}
+                                                >
+                                                    {date_time}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
-                        <form onSubmit={this.sendMessage}>
+                        <form
+                            className={`${block.elem('form')} form-group`}
+                            onSubmit={this.sendMessage}
+                        >
                             <input
+                                className={`${block.elem('input')} form-control`}
                                 onChange={this.handleChange}
                                 value={content}
                                 placeholder="Сообщение"
                             />
-                            {alert ? <p>{alert}</p> : null}
                             {error ? <p>{error}</p> : null}
-                            <button type="submit">Отправить</button>
+                            <button
+                                className={`${block.elem('button')} btn btn-primary`}
+                                type="submit"
+                            >
+                                Отправить
+                            </button>
                         </form>
                     </div>
                 )}

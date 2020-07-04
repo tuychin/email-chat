@@ -1,14 +1,50 @@
 .message-history {
     background-color: rgba($color: #000, $alpha: .1);
+
+    &__inner {
+        display: flex;
+        flex-direction: column;
+    }
     
     &__messages {
         width: 100%;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
+
+        &-scroll {
+            max-height: calc(100vh - 74px);
+            padding: 10px;
+            overflow-y: scroll;
+        }
+    }
+
+    &__message {
+        margin-bottom: 10px;
+        display: flex;
+
+        &-inner {
+            max-width: 70% !important;
+            min-width: 40% !important;
+        }
+    }
+
+    &__form {
+        width: 100%;
+        padding: 10px;
+        display: flex;
+    }
+
+    &__input {
+        margin-right: 10px;
+    }
+
+    &__button {
+        white-space: nowrap;
     }
     
     ._right {
+        justify-content: flex-end;
         text-align: right;
     }
 }

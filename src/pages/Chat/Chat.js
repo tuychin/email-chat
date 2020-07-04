@@ -20,9 +20,7 @@ export default class Chat extends Component {
         currentDialog: '',
         dialogs: [],
         messages: [],
-        messagesAlert: null,
         messagesError: null,
-        dialogsAlert: null,
         dialogsError: null,
     };
 
@@ -43,7 +41,7 @@ export default class Chat extends Component {
                 /**check user exist */
                 if (snapshot.exists()) {
                     console.warn('User exist');
-                    this.setState({dialogsAlert: null})
+                    this.setState({dialogsError: null})
                     try {
                         this.setState({dialogsError: null});
 
@@ -70,7 +68,7 @@ export default class Chat extends Component {
                         this.setState({dialogsError: error.message});
                     }
                 } else {
-                    this.setState({dialogsAlert: 'Данный пользователь не зарегистрирован'});
+                    this.setState({dialogsError: 'Данный пользователь не зарегистрирован'});
                     console.warn('User not exist');
                 }
 
@@ -85,7 +83,7 @@ export default class Chat extends Component {
             if (dialog.member === email) {
                 isDialogAlredyExist = true;
                 this.selectDialog(dialog.dialogId);
-                this.setState({dialogsAlert: 'Такой диалог уже существует'})
+                this.setState({dialogsError: 'Такой диалог уже существует'})
             }
         });
 
@@ -173,7 +171,7 @@ export default class Chat extends Component {
                     message_id: res.key,
                     content: content,
                     date_time: getCurrentTime(),
-                    time_stamp: Date.now(),
+                    time_stamp: new Date().getTime(),
                     user_id: currentUser.uid,
                     user_email: currentUser.email
                 });
@@ -213,10 +211,8 @@ export default class Chat extends Component {
             currentUser,
             currentDialog,
             dialogs,
-            dialogsAlert,
             dialogsError,
             messages,
-            messagesAlert,
             messagesError,
         } = this.state;
 
@@ -230,7 +226,6 @@ export default class Chat extends Component {
                                 dialogs={dialogs}
                                 createDialog={this.createDialog}
                                 selectDialog={this.selectDialog}
-                                alert={dialogsAlert}
                                 error={dialogsError}
                             />
                         </div>
@@ -241,13 +236,8 @@ export default class Chat extends Component {
                                 messages={messages}
                                 submit={this.sendMessage}
                                 signOut={signOut}
-                                alert={messagesAlert}
                                 error={messagesError}
                             />
-                        </div>
-                        <div>
-                            Вход выполнен через: <strong>{currentUser.email}</strong>
-                            <Link to="/" onClick={signOut}> Выйти </Link>
                         </div>
                     </div>
                 </div>
@@ -255,3 +245,10 @@ export default class Chat extends Component {
         );
     }
 }
+
+/***
+<div>
+    Вход выполнен через: <strong>{currentUser.email}</strong>
+    <Link to="/" onClick={signOut}> Выйти </Link>
+</div>
+***/
