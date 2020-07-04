@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './dialogs.css';
+import './dialogs.scss';
 
 const Bevis = require('bevis');
 
@@ -42,6 +42,7 @@ class Dialogs extends Component {
     }
 
     selectDialog = (evt) => {
+        evt.preventDefault();
         const {selectDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
 
@@ -57,36 +58,37 @@ class Dialogs extends Component {
         } = this.props;
 
         return (
-            <div className={block.name()}>
-                <div className="vh-100 d-flex flex-column justify-content-between align-items-center col-md-4 border">
-                    <div className="d-flex flex-column">
-                        {dialogs && 
-                            dialogs.map(dialog => (
-                                <button
-                                    className="btn btn-outline-secondary"
-                                    onClick={this.selectDialog}
-                                    data-dialog-id={dialog.dialogId}
-                                    key={dialog.dialogId}
-                                >
-                                    {dialog.member}
-                                </button>
-                            ))
-                        }
+            <div className={`${block.name()} container`}>
+                {dialogs && (
+                    <div className={`${block.elem('list')} list-group`}>
+                        {dialogs.map(dialog => (
+                            <a
+                                className={`${block.elem('list-item')} list-group-item list-group-item-action`}
+                                onClick={this.selectDialog}
+                                data-dialog-id={dialog.dialogId}
+                                key={dialog.dialogId}
+                                href="#"
+                            >
+                                {dialog.member}
+                            </a>
+                        ))}
                     </div>
-                    <form onSubmit={this.createDialog}>
-                        <input
-                            onChange={this.handleChange}
-                            value={email}
-                            placeholder="email"
-                            required
-                        />
-                        {alert ? <p>{alert}</p> : null}
-                        {error ? <p>{error}</p> : null}
-                        <button type="submit">
-                            Создать диалог
-                        </button>
-                    </form>
-                </div>
+                )}
+
+                <form className={`${block.elem('form')} form-group`} onSubmit={this.createDialog}>
+                    <input
+                        className={`${block.elem('input')} form-control`}
+                        onChange={this.handleChange}
+                        value={email}
+                        placeholder="email"
+                        required
+                    />
+                    {alert ? <p>{alert}</p> : null}
+                    {error ? <p>{error}</p> : null}
+                    <button className={`${block.elem('button')} btn btn-primary`} type="submit">
+                        Создать диалог
+                    </button>
+                </form>
             </div>
         );
     }

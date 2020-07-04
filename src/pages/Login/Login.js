@@ -3,6 +3,8 @@ import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../help
 
 import Confirm from '../../components/Confirm';
 
+import './login.scss';
+
 const Bevis = require('bevis');
 
 const block = new Bevis('login');

@@ -1,0 +1,9 @@
+.chat {
+    &__container {
+        background-color: rgba($color: #000, $alpha: .1);
+    }
+
+    &__col {
+        padding: 0 !important;
+    }
+}

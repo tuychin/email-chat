@@ -43,18 +43,23 @@ export default class App extends Component {
     render() {
         const {authenticated, loading} = this.state;
 
-        return loading ? <h2>Loading...</h2> : (
-            <Router>
-                <Switch>
-                    <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
-                    <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
-                    <Route render={() => (
-                        <div className="jumbotron text-center">
-                            <h2>404<br/>Page not found</h2>
-                        </div>
-                    )} />
-                </Switch>
-            </Router>
-        );
+        return loading
+            ? (
+                <div className="vh-100 d-flex justify-content-center align-items-center">
+                    <h1>Загрузка...</h1>
+                </div>
+            ) : (
+                <Router>
+                    <Switch>
+                        <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
+                        <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
+                        <Route render={() => (
+                            <div className="jumbotron text-center">
+                                <h2>404<br/>Страница не найдена</h2>
+                            </div>
+                        )} />
+                    </Switch>
+                </Router>
+            );
     }
 }

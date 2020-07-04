@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
-import './confirm.css';
+import './confirm.scss';
 
 const Bevis = require('bevis');
 

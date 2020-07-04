@@ -1,0 +1,14 @@
+.message-history {
+    background-color: rgba($color: #000, $alpha: .1);
+    
+    &__messages {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+    
+    ._right {
+        text-align: right;
+    }
+}

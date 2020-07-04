@@ -8,7 +8,7 @@ import { db } from '../../services/firebase';
 import MessageHistory from '../../components/MessageHistory';
 import Dialogs from '../../components/Dialogs';
 
-import './chat.css';
+import './chat.scss';
 
 const Bevis = require('bevis');
 
@@ -222,25 +222,29 @@ export default class Chat extends Component {
 
         return (
             <div className={block.name()}>
-                <div className="container">
-                    <div className="row">
-                        <Dialogs
-                            currentDialog={currentDialog}
-                            dialogs={dialogs}
-                            createDialog={this.createDialog}
-                            selectDialog={this.selectDialog}
-                            alert={dialogsAlert}
-                            error={dialogsError}
-                        />
-                        <MessageHistory
-                            user={currentUser}
-                            dialog={currentDialog}
-                            messages={messages}
-                            submit={this.sendMessage}
-                            signOut={signOut}
-                            alert={messagesAlert}
-                            error={messagesError}
-                        />
+                <div className={`${block.elem('container')} container`}>
+                    <div className={`${block.elem('row')} row`}>
+                        <div className={`${block.elem('col')} col-md-4`}>
+                            <Dialogs
+                                currentDialog={currentDialog}
+                                dialogs={dialogs}
+                                createDialog={this.createDialog}
+                                selectDialog={this.selectDialog}
+                                alert={dialogsAlert}
+                                error={dialogsError}
+                            />
+                        </div>
+                        <div className={`${block.elem('col')} col-md-8`}>
+                            <MessageHistory
+                                user={currentUser}
+                                dialog={currentDialog}
+                                messages={messages}
+                                submit={this.sendMessage}
+                                signOut={signOut}
+                                alert={messagesAlert}
+                                error={messagesError}
+                            />
+                        </div>
                         <div>
                             Вход выполнен через: <strong>{currentUser.email}</strong>
                             <Link to="/" onClick={signOut}> Выйти </Link>

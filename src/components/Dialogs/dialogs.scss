@@ -1,0 +1,24 @@
+.dialogs {
+    width: 100%;
+    padding: 10px;
+
+    &__list {
+        margin-bottom: 10px !important;
+    }
+
+    &__list-item {
+        overflow: auto;
+    }
+
+    &__form {
+        display: flex;
+    }
+
+    &__input {
+        margin-right: 10px;
+    }
+
+    &__button {
+        white-space: nowrap;
+    }
+}

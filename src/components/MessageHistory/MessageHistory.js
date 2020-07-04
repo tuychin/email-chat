@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import './message-history.css';
+import './message-history.scss';
 
 const Bevis = require('bevis');
 
@@ -58,14 +58,14 @@ export default class MessageHistory extends Component {
         } = this.props;
 
         return (
-            <div className={block.name()}>
+            <div className={`${block.name()} container`}>
                 {!dialog ? (
-                    <div className="vh-100 d-flex flex-column justify-content-center align-items-center col-md-8 border">
+                    <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
                         <h2>Выберите, кому хотели бы написать</h2>
                     </div>
                 ) : (
-                    <div className="vh-100 d-flex justify-content-end align-items-end flex-column col-md-8 border overflow-auto">
-                        <div className="messages">
+                    <div className="vh-100 d-flex justify-content-end align-items-end flex-column overflow-auto">
+                        <div className={`${block.elem('messages')}`}>
                             {messages.map(({
                                 message_id,
                                 content,
@@ -75,9 +75,9 @@ export default class MessageHistory extends Component {
                                 user_email,
                             }) => (
                                 <div
-                                    key={`message_${time_stamp}`}
-                                    className={user_id === user.uid ? '_right' : ''}
+                                    className={block.elem('message', user_id === user.uid ? 'right' : '')}
                                     data-message-id={message_id}
+                                    key={`message_${time_stamp}`}
                                 >
                                     <span key={`email_${time_stamp}`}>{user_email}</span>
                                     <br />
