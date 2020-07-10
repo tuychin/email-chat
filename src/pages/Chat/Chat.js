@@ -20,16 +20,28 @@ export default class Chat extends Component {
         currentDialog: '',
         dialogs: [],
         messages: [],
-        messagesError: null,
-        dialogsError: null,
+        error: null,
     };
 
     componentDidMount() {
         this.getDialogs();
     }
 
+    componentDidUpdate() {
+        const {error} = this.state;
+
+        if (error) {
+            this.showErrorMessage(error);
+        }
+    }
+
+    showErrorMessage = (errorMessage) => {
+        alert(errorMessage)
+        this.setState({error: null});
+    }
+
     createDialog = async (email) => {
-        this.setState({dialogsError: null});
+        this.setState({error: null});
 
         if (this.checkDialogExist(email)) return;
 
@@ -41,9 +53,9 @@ export default class Chat extends Component {
                 /**check user exist */
                 if (snapshot.exists()) {
                     console.warn('User exist');
-                    this.setState({dialogsError: null})
+                    this.setState({error: null})
                     try {
-                        this.setState({dialogsError: null});
+                        this.setState({error: null});
 
                         /**add dialog to /dialogs */
                         db.ref('dialogs')
@@ -60,15 +72,15 @@ export default class Chat extends Component {
                             })
                             .catch((error) => {
                                 console.error(error);
-                                this.setState({dialogsError: error.message});
+                                this.setState({error: error.message});
                             });
             
                     } catch (error) {
                         console.error(error);
-                        this.setState({dialogsError: error.message});
+                        this.setState({error: error.message});
                     }
                 } else {
-                    this.setState({dialogsError: 'Данный пользователь не зарегистрирован'});
+                    this.setState({error: 'Данный пользователь не зарегистрирован'});
                     console.warn('User not exist');
                 }
 
@@ -83,7 +95,7 @@ export default class Chat extends Component {
             if (dialog.member === email) {
                 isDialogAlredyExist = true;
                 this.selectDialog(dialog.dialogId);
-                this.setState({dialogsError: 'Такой диалог уже существует'})
+                this.setState({error: 'Такой диалог уже существует'})
             }
         });
 
@@ -102,7 +114,7 @@ export default class Chat extends Component {
                 });
         } catch (error) {
             console.error(error);
-            this.setState({dialogsError: error.message});
+            this.setState({error: error.message});
         }
     }
 
@@ -128,28 +140,29 @@ export default class Chat extends Component {
                 });
         } catch (error) {
             console.error(error);
-            this.setState({dialogsError: error.message});
+            this.setState({error: error.message});
         }
     }
 
     getDialogs = () => {
         const {currentUser} =this.state;
 
-        this.setState({dialogsError: null});
+        this.setState({error: null});
 
         try {
-            db.ref(`users/${currentUser.uid}/dialogs`).on('value', snapshot => {
-                let dialogs = [];
+            db.ref(`users/${currentUser.uid}/dialogs`)
+                .on('value', snapshot => {
+                    const dialogs = [];
 
-                snapshot.forEach((snap) => {
-                    dialogs.push(snap.val());
+                    snapshot.forEach((snap) => {
+                        dialogs.push(snap.val());
+                    });
+
+                    this.setState({dialogs});
                 });
-                
-                this.setState({dialogs});
-            });
         } catch (error) {
             console.error(error);
-            this.setState({dialogsError: error.message});
+            this.setState({error: error.message});
         }
     }
 
@@ -161,24 +174,24 @@ export default class Chat extends Component {
     sendMessage = async (content) => {
         const {currentUser, currentDialog} =this.state;
 
-        this.setState({messagesError: null});
+        this.setState({error: null});
 
         try {
             await db.ref(`dialogs/${currentDialog}`)
-            .push(true)
-            .then((res) => {
-                res.set({
-                    message_id: res.key,
-                    content: content,
-                    date_time: getCurrentTime(),
-                    time_stamp: new Date().getTime(),
-                    user_id: currentUser.uid,
-                    user_email: currentUser.email
-                });
-            })
+                .push(true)
+                .then((res) => {
+                    res.set({
+                        message_id: res.key,
+                        content: content,
+                        date_time: getCurrentTime(),
+                        time_stamp: new Date().getTime(),
+                        user_id: currentUser.uid,
+                        user_email: currentUser.email
+                    });
+                })
         } catch (error) {
             console.error(error);
-            this.setState({messagesError: error.message});
+            this.setState({error: error.message});
         }
     }
 
@@ -186,7 +199,7 @@ export default class Chat extends Component {
         const {currentDialog} =this.state;
 
         if (dialogId || currentDialog) {
-            this.setState({messagesError: null});
+            this.setState({error: null});
 
             try {
                 db.ref(`dialogs/${dialogId || currentDialog}`)
@@ -201,7 +214,7 @@ export default class Chat extends Component {
                     });
             } catch (error) {
                 console.error(error);
-                this.setState({messagesError: error.message});
+                this.setState({error: error.message});
             }
         }
     }
@@ -211,9 +224,7 @@ export default class Chat extends Component {
             currentUser,
             currentDialog,
             dialogs,
-            dialogsError,
             messages,
-            messagesError,
         } = this.state;
 
         return (
@@ -226,7 +237,6 @@ export default class Chat extends Component {
                                 dialogs={dialogs}
                                 createDialog={this.createDialog}
                                 selectDialog={this.selectDialog}
-                                error={dialogsError}
                             />
                         </div>
                         <div className={`${block.elem('col')} col-md-8`}>
@@ -236,7 +246,6 @@ export default class Chat extends Component {
                                 messages={messages}
                                 submit={this.sendMessage}
                                 signOut={signOut}
-                                error={messagesError}
                             />
                         </div>
                     </div>

@@ -23,7 +23,18 @@ export default class MessageHistory extends Component {
     static defaultProps = {
         dialog: '',
         messages: [],
-        error: null,
+    }
+
+    componentDidUpdate() {
+        this.scrollToBottom();
+    }
+
+    messagesRef = React.createRef();
+
+    scrollToBottom = () => {
+        if (this.messagesRef.current) {
+            this.messagesRef.current.scrollTop = this.messagesRef.current.scrollHeight;
+        }
     }
 
     сheckNoLetters = (str) => str.trim() === '';
@@ -52,54 +63,55 @@ export default class MessageHistory extends Component {
             user,
             dialog,
             messages,
-            error,
         } = this.props;
 
         return (
-            <div className={`${block.name()} container`}>
+            <div className={`${block.name()}`}>
                 {!dialog ? (
                     <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
                         <h2>Выберите, кому хотели бы написать</h2>
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>
-                        <div className={`${block.elem('messages')}`}>
-                            <div className={`${block.elem('messages-scroll')}`}>
-                                {messages.map(({
+                        <div
+                            className={`${block.elem('messages')}`}
+                            ref={this.messagesRef}
+                        >
+                            {messages.map((message) => {
+                                const {
                                     message_id,
                                     content,
                                     date_time,
                                     time_stamp,
                                     user_id,
-                                    user_email,
-                                }) => (
+                                } = message;
+                                const isCurentUserMessage = user_id === user.uid;
+
+                                return (message instanceof Object) && (
                                     <div
-                                        className={block.elem('message', user_id === user.uid ? 'right' : '')}
+                                        className={block.elem('message', isCurentUserMessage ? 'right' : '')}
                                         data-message-id={message_id}
                                         key={`message_${time_stamp}`}
                                     >
                                         <div
                                             className={`${block.elem('message-inner')} card text-white
-                                                ${user_id === user.uid ? 'bg-success' : 'bg-info'}`}
+                                                ${isCurentUserMessage ? 'bg-success' : 'bg-info'}`}
                                         >
-                                            <div className="card-header">
-                                                {user_email}
-                                            </div>
                                             <div className="card-body">
                                                 <p className="card-text">
                                                     {content}
                                                 </p>
                                                 <span
                                                     className={`badge
-                                                        ${user_id === user.uid ? 'badge-success' : 'badge-info'}`}
+                                                        ${isCurentUserMessage ? 'badge-success' : 'badge-info'}`}
                                                 >
                                                     {date_time}
                                                 </span>
                                             </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
+                                )
+                            })}
                         </div>
 
                         <form
@@ -112,7 +124,7 @@ export default class MessageHistory extends Component {
                                 value={content}
                                 placeholder="Сообщение"
                             />
-                            {error ? <p>{error}</p> : null}
+
                             <button
                                 className={`${block.elem('button')} btn btn-primary`}
                                 type="submit"

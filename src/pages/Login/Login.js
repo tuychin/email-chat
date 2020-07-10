@@ -16,6 +16,19 @@ export default class Login extends Component {
         showConfirm: false,
     };
 
+    componentDidUpdate() {
+        const {error} = this.state;
+
+        if (error) {
+            this.showErrorMessage(error);
+        }
+    }
+
+    showErrorMessage = (errorMessage) => {
+        alert(errorMessage)
+        this.setState({error: null});
+    }
+
     handleChange = (event) => {
         this.setState({
             [event.target.name]: event.target.value

@@ -22,7 +22,6 @@ class Dialogs extends Component {
     static defaultProps = {
         dialogs: [],
         currentDialog: '',
-        error: null,
     }
 
     handleChange = (event) => {
@@ -52,7 +51,6 @@ class Dialogs extends Component {
         const {email} = this.state;
         const {
             dialogs,
-            error,
         } = this.props;
 
         return (
@@ -68,7 +66,7 @@ class Dialogs extends Component {
                         placeholder="email"
                         required
                     />
-                    {error ? <p>{error}</p> : null}
+
                     <button
                         className={`${block.elem('button')} btn btn-primary`}
                         type="submit"

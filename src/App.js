@@ -11,7 +11,7 @@ import Login from './pages/Login';
 import { auth } from './services/firebase';
 import { checkConfirmEmail } from './helpers/auth';
 
-import 'bootswatch/dist/minty/bootstrap.min.css';
+import 'bootswatch/dist/solar/bootstrap.min.css';
 
 export default class App extends Component {
     state = {
