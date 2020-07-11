@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './dialogs.scss';
+import Loader from '../Loader';
 
 const Bevis = require('bevis');
 
@@ -75,21 +76,25 @@ class Dialogs extends Component {
                     </button>
                 </form>
 
-                {dialogs && (
-                    <div className={`${block.elem('list')} list-group`}>
-                        {dialogs.map(dialog => (
-                            <a
-                                className={`${block.elem('list-item')} list-group-item list-group-item-action`}
-                                onClick={this.selectDialog}
-                                data-dialog-id={dialog.dialogId}
-                                key={dialog.dialogId}
-                                href="#"
-                            >
-                                {dialog.member}
-                            </a>
-                        ))}
-                    </div>
-                )}
+                {dialogs.length
+                    ? (
+                        <div className={`${block.elem('list')} list-group`}>
+                            {dialogs.map(dialog => (
+                                <a
+                                    className={`${block.elem('list-item')} list-group-item list-group-item-action`}
+                                    onClick={this.selectDialog}
+                                    data-dialog-id={dialog.dialogId}
+                                    key={dialog.dialogId}
+                                    href="#"
+                                >
+                                    {dialog.member}
+                                </a>
+                            ))}
+                        </div>
+                    ) : (
+                        <Loader />
+                    )
+                }
             </div>
         );
     }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import './message-history.scss';
+import Loader from '../Loader';
 
 const Bevis = require('bevis');
 
@@ -73,46 +74,55 @@ export default class MessageHistory extends Component {
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>
-                        <div
-                            className={`${block.elem('messages')}`}
-                            ref={this.messagesRef}
-                        >
-                            {messages.map((message) => {
-                                const {
-                                    message_id,
-                                    content,
-                                    date_time,
-                                    time_stamp,
-                                    user_id,
-                                } = message;
-                                const isCurentUserMessage = user_id === user.uid;
-
-                                return (message instanceof Object) && (
+                        {
+                            messages.length
+                                ? (
                                     <div
-                                        className={block.elem('message', isCurentUserMessage ? 'right' : '')}
-                                        data-message-id={message_id}
-                                        key={`message_${time_stamp}`}
+                                        className={`${block.elem('messages')}`}
+                                        ref={this.messagesRef}
                                     >
-                                        <div
-                                            className={`${block.elem('message-inner')} card text-white
-                                                ${isCurentUserMessage ? 'bg-success' : 'bg-info'}`}
-                                        >
-                                            <div className="card-body">
-                                                <p className="card-text">
-                                                    {content}
-                                                </p>
-                                                <span
-                                                    className={`badge
-                                                        ${isCurentUserMessage ? 'badge-success' : 'badge-info'}`}
+                                        {messages.map((message) => {
+                                            const {
+                                                message_id,
+                                                content,
+                                                date_time,
+                                                time_stamp,
+                                                user_id,
+                                            } = message;
+                                            const isCurentUserMessage = user_id === user.uid;
+            
+                                            return (message instanceof Object) && (
+                                                <div
+                                                    className={block.elem('message', isCurentUserMessage ? 'right' : '')}
+                                                    data-message-id={message_id}
+                                                    key={`message_${time_stamp}`}
                                                 >
-                                                    {date_time}
-                                                </span>
-                                            </div>
-                                        </div>
+                                                    <div
+                                                        className={`${block.elem('message-inner')} card text-white
+                                                            ${isCurentUserMessage ? 'bg-success' : 'bg-info'}`}
+                                                    >
+                                                        <div className="card-body">
+                                                            <p className={`${block.elem('message-text')} card-text`}>
+                                                                {content}
+                                                            </p>
+                                                            <span
+                                                                className={`badge
+                                                                    ${isCurentUserMessage ? 'badge-success' : 'badge-info'}`}
+                                                            >
+                                                                {date_time}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                ) : (
+                                    <div className="vh-100 d-flex justify-content-center align-items-center">
+                                        <Loader />
                                     </div>
                                 )
-                            })}
-                        </div>
+                        }
 
                         <form
                             className={`${block.elem('form')} form-group`}

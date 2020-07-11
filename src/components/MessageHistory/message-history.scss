@@ -2,8 +2,10 @@
     border-left: 1px solid rgba($color: #777, $alpha: .2);
 
     &__inner {
+        height: 100vh;
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
     }
     
     &__messages {
@@ -19,6 +21,10 @@
         &-inner {
             max-width: 70% !important;
             min-width: 40% !important;
+        }
+
+        &-text {
+            text-align: left;
         }
     }
 

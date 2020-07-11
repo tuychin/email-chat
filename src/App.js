@@ -8,6 +8,7 @@ import PrivateRoute from './hocs/withPrivateRoute';
 import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
+import Loader from './components/Loader';
 import { auth } from './services/firebase';
 import { checkConfirmEmail } from './helpers/auth';
 
@@ -46,7 +47,7 @@ export default class App extends Component {
         return loading
             ? (
                 <div className="vh-100 d-flex justify-content-center align-items-center">
-                    <h1>Загрузка...</h1>
+                    <Loader />
                 </div>
             ) : (
                 <Router>
