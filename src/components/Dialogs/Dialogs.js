@@ -44,8 +44,9 @@ class Dialogs extends Component {
         evt.preventDefault();
         const {selectDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
+        const memberName = evt.target.dataset.memberName;
 
-        selectDialog(dialogId);
+        selectDialog(dialogId, memberName);
     }
 
     render() {
@@ -84,6 +85,7 @@ class Dialogs extends Component {
                                     className={`${block.elem('list-item')} list-group-item list-group-item-action`}
                                     onClick={this.selectDialog}
                                     data-dialog-id={dialog.dialogId}
+                                    data-member-name={dialog.member}
                                     key={dialog.dialogId}
                                     href="#"
                                 >

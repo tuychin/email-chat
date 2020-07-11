@@ -1,6 +1,5 @@
 import React, { Component, useEffect } from 'react';
 import getCurrentTime from '../../helpers/getCurrentTime';
-import { Link } from 'react-router-dom';
 import { signOut } from '../../helpers/auth';
 import { auth } from '../../services/firebase';
 import { db } from '../../services/firebase';
@@ -17,6 +16,7 @@ const block = new Bevis('chat');
 export default class Chat extends Component {
     state = {
         currentUser: auth().currentUser,
+        currentMember: '',
         currentDialog: '',
         dialogs: [],
         messages: [],
@@ -166,8 +166,11 @@ export default class Chat extends Component {
         }
     }
 
-    selectDialog = (dialogId) => {
-        this.setState({currentDialog: dialogId});
+    selectDialog = (dialogId, memberName) => {
+        this.setState({
+            currentDialog: dialogId,
+            currentMember: memberName,
+        });
         this.getMessages(dialogId);
     }
 
@@ -222,6 +225,7 @@ export default class Chat extends Component {
     render() {
         const {
             currentUser,
+            currentMember,
             currentDialog,
             dialogs,
             messages,
@@ -242,6 +246,7 @@ export default class Chat extends Component {
                         <div className={`${block.elem('col')} col-md-8`}>
                             <MessageHistory
                                 user={currentUser}
+                                member={currentMember}
                                 dialog={currentDialog}
                                 messages={messages}
                                 submit={this.sendMessage}

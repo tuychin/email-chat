@@ -62,6 +62,7 @@ export default class MessageHistory extends Component {
 
         const {
             user,
+            member,
             dialog,
             messages,
         } = this.props;
@@ -74,6 +75,10 @@ export default class MessageHistory extends Component {
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>
+                        <div className={block.elem('header')}>
+                            {member}
+                        </div>
+
                         {
                             messages.length
                                 ? (
