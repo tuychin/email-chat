@@ -12,7 +12,7 @@ import Loader from './components/Loader';
 import { auth } from './services/firebase';
 import { checkConfirmEmail } from './helpers/auth';
 
-import 'bootswatch/dist/solar/bootstrap.min.css';
+import 'bootswatch/dist/minty/bootstrap.min.css';
 
 export default class App extends Component {
     state = {

@@ -123,7 +123,7 @@ export default class MessageHistory extends Component {
                                         })}
                                     </div>
                                 ) : (
-                                    <div className="vh-100 d-flex justify-content-center align-items-center">
+                                    <div className={block.elem('loader')}>
                                         <Loader />
                                     </div>
                                 )

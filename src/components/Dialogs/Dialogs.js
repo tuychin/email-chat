@@ -56,32 +56,34 @@ class Dialogs extends Component {
         } = this.props;
 
         return (
-            <div className={`${block.name()} container`}>
-                <form
-                    className={`${block.elem('form')} form-group`}
-                    onSubmit={this.createDialog}
-                >
-                    <input
-                        className={`${block.elem('input')} form-control`}
-                        onChange={this.handleChange}
-                        value={email}
-                        placeholder="email"
-                        required
-                    />
-
-                    <button
-                        className={`${block.elem('button')} btn btn-primary`}
-                        type="submit"
+            <div className={block.name()}>
+                <div className={block.elem('header')}>
+                    <form
+                        className={`${block.elem('form')} form-group`}
+                        onSubmit={this.createDialog}
                     >
-                        Создать диалог
-                    </button>
-                </form>
+                        <input
+                            className={`${block.elem('input')} form-control`}
+                            onChange={this.handleChange}
+                            value={email}
+                            placeholder="email"
+                            required
+                        />
+
+                        <button
+                            className={`${block.elem('button')} btn btn-primary`}
+                            type="submit"
+                        >
+                            Создать диалог
+                        </button>
+                    </form>
+                </div>
 
                 {dialogs.length
                     ? (
-                        <div className={`${block.elem('list')} list-group`}>
+                        <ul className={`${block.elem('list')} list-group`}>
                             {dialogs.map(dialog => (
-                                <a
+                                <li
                                     className={`${block.elem('list-item')} list-group-item list-group-item-action`}
                                     onClick={this.selectDialog}
                                     data-dialog-id={dialog.dialogId}
@@ -90,11 +92,13 @@ class Dialogs extends Component {
                                     href="#"
                                 >
                                     {dialog.member}
-                                </a>
+                                </li>
                             ))}
-                        </div>
+                        </ul>
                     ) : (
-                        <Loader />
+                        <div className={block.elem('loader')}>
+                            <Loader />
+                        </div>
                     )
                 }
             </div>
