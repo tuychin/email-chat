@@ -1,8 +1,25 @@
-import React, { Component, useEffect } from 'react';
+import React, { memo, useEffect } from 'react';
 import getCurrentTime from '../../helpers/getCurrentTime';
 import { signOut } from '../../helpers/auth';
-import { auth } from '../../services/firebase';
-import { db } from '../../services/firebase';
+import { db, auth } from '../../services/firebase';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+    fetchCurrentUser,
+    setCurrentMember,
+    setCurrentDialog,
+    setDialogs,
+    setMessages,
+    setError,
+    clearError,
+    showErrorMessage,
+
+    selectCurrentUser,
+    selectCurrentMember,
+    selectCurrentDialog,
+    selectDialogs,
+    selectMessages,
+    selectError,
+} from './chatSlice';
 
 import MessageHistory from '../../components/MessageHistory';
 import Dialogs from '../../components/Dialogs';
@@ -13,37 +30,26 @@ const Bevis = require('bevis');
 
 const block = new Bevis('chat');
 
-export default class Chat extends Component {
-    state = {
-        currentUser: auth().currentUser,
-        currentMember: '',
-        currentDialog: '',
-        dialogs: [],
-        messages: [],
-        error: null,
-    };
+export default memo(function Chat() {
+    const dispatch = useDispatch();
 
-    componentDidMount() {
-        this.getDialogs();
-    }
+    const currentUser = useSelector(selectCurrentUser);
+    const currentMember = useSelector(selectCurrentMember);
+    const currentDialog = useSelector(selectCurrentDialog);
+    const dialogs = useSelector(selectDialogs);
+    const messages = useSelector(selectMessages);
+    const error = useSelector(selectError);
 
-    componentDidUpdate() {
-        const {error} = this.state;
+    useEffect(() => {
+        dispatch(fetchCurrentUser(auth().currentUser));
+        fetchDialogs(auth().currentUser);
+        if (error) dispatch(showErrorMessage(error));
+    }, [error]);
 
-        if (error) {
-            this.showErrorMessage(error);
-        }
-    }
+    async function createDialog(email) {
+        dispatch(clearError());
 
-    showErrorMessage = (errorMessage) => {
-        alert(errorMessage)
-        this.setState({error: null});
-    }
-
-    createDialog = async (email) => {
-        this.setState({error: null});
-
-        if (this.checkDialogExist(email)) return;
+        if (checkDialogExist(email)) return;
 
         db.ref('users')
             .orderByChild('email')
@@ -53,58 +59,55 @@ export default class Chat extends Component {
                 /**check user exist */
                 if (snapshot.exists()) {
                     console.warn('User exist');
-                    this.setState({error: null})
+                    dispatch(clearError());
                     try {
-                        this.setState({error: null});
+                        dispatch(clearError());
 
                         /**add dialog to /dialogs */
                         db.ref('dialogs')
                             .push(true)
                             .then((res) => {
-                                this.setState({currentDialog: res.key});
-                                this.getMessages(res.key);
+                                dispatch(setCurrentDialog(res.key));
+                                fetchMessages(res.key);
                             })
                             .then(() => {
-                                this.addDialogToAnotherUser(email);
+                                addDialogToAnotherUser(email);
                             })
                             .then(() => {
-                                this.addDialogToCurrentUser(email);
+                                addDialogToCurrentUser(email);
                             })
                             .catch((error) => {
                                 console.error(error);
-                                this.setState({error: error.message});
+                                dispatch(setError(error.message));
                             });
             
                     } catch (error) {
                         console.error(error);
-                        this.setState({error: error.message});
+                        dispatch(setError(error.message));
                     }
                 } else {
-                    this.setState({error: 'Данный пользователь не зарегистрирован'});
+                    dispatch(setError('Данный пользователь не зарегистрирован'));
                     console.warn('User not exist');
                 }
 
             });
     }
 
-    checkDialogExist = (email) => {
-        const {dialogs} = this.state;
+    function checkDialogExist(email) {
         let isDialogAlredyExist = false;
 
         dialogs.forEach(dialog => {
             if (dialog.member === email) {
                 isDialogAlredyExist = true;
-                this.selectDialog(dialog.dialogId);
-                this.setState({error: 'Такой диалог уже существует'})
+                selectDialog(dialog.dialogId);
+                dispatch(setError('Такой диалог уже существует'));
             }
         });
 
         return isDialogAlredyExist;
     }
 
-    addDialogToCurrentUser = async (anotherUserEmail) => {
-        const {currentDialog, currentUser} = this.state;
-
+    async function addDialogToCurrentUser(anotherUserEmail) {
         try {
             await db.ref(`users/${currentUser.uid}/dialogs`)
                 .child(currentDialog)
@@ -114,13 +117,11 @@ export default class Chat extends Component {
                 });
         } catch (error) {
             console.error(error);
-            this.setState({error: error.message});
+            dispatch(setError(error.message));
         }
     }
 
-    addDialogToAnotherUser = async (email) => {
-        const {currentDialog, currentUser} = this.state;
-
+    async function addDialogToAnotherUser(email) {
         try {
             /**get user id by email */
             await db.ref('users')
@@ -140,14 +141,12 @@ export default class Chat extends Component {
                 });
         } catch (error) {
             console.error(error);
-            this.setState({error: error.message});
+            dispatch(setError(error.message));
         }
     }
 
-    getDialogs = () => {
-        const {currentUser} =this.state;
-
-        this.setState({error: null});
+    function fetchDialogs(currentUser) {
+        dispatch(clearError());
 
         try {
             db.ref(`users/${currentUser.uid}/dialogs`)
@@ -158,26 +157,22 @@ export default class Chat extends Component {
                         dialogs.push(snap.val());
                     });
 
-                    this.setState({dialogs});
+                    dispatch(setDialogs(dialogs));
                 });
         } catch (error) {
             console.error(error);
-            this.setState({error: error.message});
+            dispatch(setError(error.message));
         }
     }
 
-    selectDialog = (dialogId, memberName) => {
-        this.setState({
-            currentDialog: dialogId,
-            currentMember: memberName,
-        });
-        this.getMessages(dialogId);
+    function selectDialog(dialogId, memberName) {
+        dispatch(setCurrentDialog(dialogId));
+        dispatch(setCurrentMember(memberName));
+        fetchMessages(dialogId);
     }
 
-    sendMessage = async (content) => {
-        const {currentUser, currentDialog} =this.state;
-
-        this.setState({error: null});
+    async function sendMessage(content) {
+        dispatch(clearError());
 
         try {
             await db.ref(`dialogs/${currentDialog}`)
@@ -194,15 +189,13 @@ export default class Chat extends Component {
                 })
         } catch (error) {
             console.error(error);
-            this.setState({error: error.message});
+            dispatch(setError(error.message));
         }
     }
 
-    getMessages = (dialogId) => {
-        const {currentDialog} =this.state;
-
+    function fetchMessages(dialogId) {
         if (dialogId || currentDialog) {
-            this.setState({error: null});
+            dispatch(clearError());
 
             try {
                 db.ref(`dialogs/${dialogId || currentDialog}`)
@@ -213,52 +206,42 @@ export default class Chat extends Component {
                             messages.push(snap.val());
                         });
         
-                        this.setState({messages});
+                        dispatch(setMessages(messages));
                     });
             } catch (error) {
                 console.error(error);
-                this.setState({error: error.message});
+                dispatch(setError(error.message));
             }
         }
     }
 
-    render() {
-        const {
-            currentUser,
-            currentMember,
-            currentDialog,
-            dialogs,
-            messages,
-        } = this.state;
-
-        return (
-            <div className={block.name()}>
-                <div className={`${block.elem('container')} container`}>
-                    <div className={`${block.elem('row')} row`}>
-                        <div className={`${block.elem('col')} col-md-4`}>
-                            <Dialogs
-                                currentDialog={currentDialog}
-                                dialogs={dialogs}
-                                createDialog={this.createDialog}
-                                selectDialog={this.selectDialog}
-                            />
-                        </div>
-                        <div className={`${block.elem('col')} col-md-8`}>
-                            <MessageHistory
-                                user={currentUser}
-                                member={currentMember}
-                                dialog={currentDialog}
-                                messages={messages}
-                                submit={this.sendMessage}
-                                signOut={signOut}
-                            />
-                        </div>
+    return (
+        <div className={block.name()}>
+            <div className={`${block.elem('container')} container`}>
+                <div className={`${block.elem('row')} row`}>
+                    <div className={`${block.elem('col')} col-md-4`}>
+                        <Dialogs
+                            currentDialog={currentDialog}
+                            dialogs={dialogs}
+                            createDialog={createDialog}
+                            selectDialog={selectDialog}
+                        />
+                    </div>
+                    <div className={`${block.elem('col')} col-md-8`}>
+                        <MessageHistory
+                            user={currentUser}
+                            member={currentMember}
+                            dialog={currentDialog}
+                            messages={messages}
+                            submit={sendMessage}
+                            signOut={signOut}
+                        />
                     </div>
                 </div>
             </div>
-        );
-    }
-}
+        </div>
+    );
+});
 
 /***
 <div>

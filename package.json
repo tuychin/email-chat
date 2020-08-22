@@ -28,12 +28,14 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.4.0",
     "bevis": "^0.1.1",
     "bootswatch": "^4.4.1",
     "firebase": "^7.13.2",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
     "react-router-dom": "^5.1.2"
   }
 }

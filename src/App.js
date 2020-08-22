@@ -4,6 +4,9 @@ import {
     BrowserRouter as Router,
     Switch,
 } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './store';
+
 import PrivateRoute from './hocs/withPrivateRoute';
 import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
@@ -12,7 +15,7 @@ import Loader from './components/Loader';
 import { auth } from './services/firebase';
 import { checkConfirmEmail } from './helpers/auth';
 
-import 'bootswatch/dist/minty/bootstrap.min.css';
+import 'bootswatch/dist/solar/bootstrap.min.css';
 
 export default class App extends Component {
     state = {
@@ -50,17 +53,19 @@ export default class App extends Component {
                     <Loader />
                 </div>
             ) : (
-                <Router>
-                    <Switch>
-                        <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
-                        <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
-                        <Route render={() => (
-                            <div className="jumbotron text-center">
-                                <h2>404<br/>Страница не найдена</h2>
-                            </div>
-                        )} />
-                    </Switch>
-                </Router>
+                <Provider store={store}>
+                    <Router>
+                        <Switch>
+                            <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
+                            <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
+                            <Route render={() => (
+                                <div className="jumbotron text-center">
+                                    <h2>404<br/>Страница не найдена</h2>
+                                </div>
+                            )} />
+                        </Switch>
+                    </Router>
+                </Provider>
             );
     }
 }
