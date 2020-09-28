@@ -57,6 +57,45 @@ export default class MessageHistory extends Component {
         });
     }
 
+    renderMessage = (message) => {
+        const {user} = this.props;
+
+        const {
+            message_id,
+            content,
+            date_time,
+            time_stamp,
+            user_id,
+        } = message;
+
+        const isCurentUserMessage = user_id === user.uid;
+
+        return (message instanceof Object) && (
+            <div
+                className={block.elem('message', isCurentUserMessage ? 'right' : '')}
+                data-message-id={message_id}
+                key={`message_${time_stamp}`}
+            >
+                <div
+                    className={`${block.elem('message-inner')} card text-white
+                        ${isCurentUserMessage ? 'bg-success' : 'bg-info'}`}
+                >
+                    <div className="card-body">
+                        <p className={`${block.elem('message-text')} card-text`}>
+                            {content}
+                        </p>
+                        <span
+                            className={`badge
+                                ${isCurentUserMessage ? 'badge-success' : 'badge-info'}`}
+                        >
+                            {date_time}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     render() {
         const {content} = this.state;
 
@@ -79,55 +118,18 @@ export default class MessageHistory extends Component {
                             {member}
                         </div>
 
-                        {
-                            messages.length
-                                ? (
-                                    <div
-                                        className={`${block.elem('messages')}`}
-                                        ref={this.messagesRef}
-                                    >
-                                        {messages.map((message) => {
-                                            const {
-                                                message_id,
-                                                content,
-                                                date_time,
-                                                time_stamp,
-                                                user_id,
-                                            } = message;
-                                            const isCurentUserMessage = user_id === user.uid;
-            
-                                            return (message instanceof Object) && (
-                                                <div
-                                                    className={block.elem('message', isCurentUserMessage ? 'right' : '')}
-                                                    data-message-id={message_id}
-                                                    key={`message_${time_stamp}`}
-                                                >
-                                                    <div
-                                                        className={`${block.elem('message-inner')} card text-white
-                                                            ${isCurentUserMessage ? 'bg-success' : 'bg-info'}`}
-                                                    >
-                                                        <div className="card-body">
-                                                            <p className={`${block.elem('message-text')} card-text`}>
-                                                                {content}
-                                                            </p>
-                                                            <span
-                                                                className={`badge
-                                                                    ${isCurentUserMessage ? 'badge-success' : 'badge-info'}`}
-                                                            >
-                                                                {date_time}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className={block.elem('loader')}>
-                                        <Loader />
-                                    </div>
-                                )
-                        }
+                        {messages.length ? (
+                            <div
+                                className={`${block.elem('messages')}`}
+                                ref={this.messagesRef}
+                            >
+                                {messages.map((message) => this.renderMessage(message))}
+                            </div>
+                        ) : (
+                            <div className={block.elem('loader')}>
+                                <Loader />
+                            </div>
+                        )}
 
                         <form
                             className={`${block.elem('form')} form-group`}

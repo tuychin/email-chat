@@ -56,13 +56,7 @@ export const {
 } = chatSlice.actions;
 
 // Thunks
-export const fetchCurrentUser = currentUser => dispatch => {
-    dispatch(setCurrentUser({
-        uid: currentUser.uid,
-        email: currentUser.email,
-        displayName: currentUser.displayName,
-    }));
-};
+
 
 // Selectors
 export const selectCurrentUser = state => state.chat.currentUser;

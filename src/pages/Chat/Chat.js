@@ -4,7 +4,7 @@ import { signOut } from '../../helpers/auth';
 import { db, auth } from '../../services/firebase';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-    fetchCurrentUser,
+    setCurrentUser,
     setCurrentMember,
     setCurrentDialog,
     setDialogs,
@@ -41,8 +41,9 @@ export default memo(function Chat() {
     const error = useSelector(selectError);
 
     useEffect(() => {
-        dispatch(fetchCurrentUser(auth().currentUser));
+        dispatch(setCurrentUser(auth().currentUser));
         fetchDialogs(auth().currentUser);
+
         if (error) dispatch(showErrorMessage(error));
     }, [error]);
 
