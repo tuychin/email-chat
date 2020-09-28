@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import './message-history.scss';
@@ -8,7 +8,7 @@ const Bevis = require('bevis');
 
 const block = new Bevis('message-history');
 
-export default class MessageHistory extends Component {
+export default class MessageHistory extends PureComponent {
     state = {
         content: '',
     }

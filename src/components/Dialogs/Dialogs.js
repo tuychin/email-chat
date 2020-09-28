@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import './dialogs.scss';
@@ -8,7 +8,7 @@ const Bevis = require('bevis');
 
 const block = new Bevis('dialogs');
 
-class Dialogs extends Component {
+class Dialogs extends PureComponent {
     state = {
         email: '',
     }

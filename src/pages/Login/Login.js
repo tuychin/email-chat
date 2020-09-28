@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../helpers/auth';
 
 import Confirm from '../../components/Confirm';
@@ -9,7 +9,7 @@ const Bevis = require('bevis');
 
 const block = new Bevis('login');
 
-export default class Login extends Component {
+export default class Login extends PureComponent {
     state = {
         error: null,
         email: '',
@@ -78,30 +78,47 @@ export default class Login extends Component {
         return (
             showConfirm ? <Confirm email={email} /> : (
                 <div className={block.name()}>
-                    <form onSubmit={this.handleSubmit}>
+                    <div className={block.elem('title')}>
                         <h1>Добро пожаловать в Email-chat</h1>
-                        <p>Всё что вам нужно, чтобы начать - электронная почта!</p>
+                        <h2>Всё что вам нужно, чтобы начать - электронная почта!</h2>
+                    </div>
+
+                    <form className={block.elem('form')} onSubmit={this.handleSubmit}>
+                        <input
+                            className={`${block.elem('input')} form-control`}
+                            placeholder="Email"
+                            name="email"
+                            type="email"
+                            onChange={this.handleChange}
+                            value={email}
+                        />
     
-                        <div>
-                            <input
-                                placeholder="Email"
-                                name="email"
-                                type="email"
-                                onChange={this.handleChange}
-                                value={email}
-                            />
-                        </div>
-    
-                        <div>
-                            {error ? (<p>{error}</p>) : null}
-                            <button type="submit">Войти</button>
-    
-                            <p>Для входа вы можете использовать эти сервисы:</p>
-    
-                            <button onClick={this.googleSignIn} type="button">Войти с Google</button>
-                            <button type="button" onClick={this.githubSignIn}>Войти с GitHub</button>
-                        </div>
+                        <button className={`${block.elem('button')} btn btn-primary`} type="submit">
+                            Войти
+                        </button>
                     </form>
+
+                    <div className={`${block.elem('sign-in')}`}>
+                        <p className="lead">Для входа вы можете использовать эти сервисы:</p>
+
+                        <div className={block.elem('wrapper')}>
+                            <button
+                                className="btn btn-secondary"
+                                onClick={this.googleSignIn}
+                                type="button"
+                            >
+                                Войти с Google
+                            </button>
+                            {' '}
+                            <button
+                                className="btn btn-secondary"
+                                type="button"
+                                onClick={this.githubSignIn}
+                            >
+                                Войти с GitHub
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )
         );
