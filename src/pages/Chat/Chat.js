@@ -1,4 +1,5 @@
 import React, { memo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import getCurrentTime from '../../helpers/getCurrentTime';
 import { signOut } from '../../helpers/auth';
 import { db, auth } from '../../services/firebase';
@@ -41,8 +42,10 @@ export default memo(function Chat() {
     const error = useSelector(selectError);
 
     useEffect(() => {
-        dispatch(setCurrentUser(auth().currentUser));
-        fetchDialogs(auth().currentUser);
+        if (auth().currentUser) {
+            dispatch(setCurrentUser(auth().currentUser));
+            fetchDialogs(auth().currentUser);
+        }
 
         if (error) dispatch(showErrorMessage(error));
     }, [error]);
@@ -238,15 +241,12 @@ export default memo(function Chat() {
                             signOut={signOut}
                         />
                     </div>
+                    <div>
+                        Вход выполнен через: <strong>{currentUser.email}</strong>
+                        <Link to="/" onClick={signOut}> Выйти </Link>
+                    </div>
                 </div>
             </div>
         </div>
     );
 });
-
-/***
-<div>
-    Вход выполнен через: <strong>{currentUser.email}</strong>
-    <Link to="/" onClick={signOut}> Выйти </Link>
-</div>
-***/

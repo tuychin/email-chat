@@ -12,9 +12,9 @@ class Confirm extends Component {
         const {email} = this.props;
 
         return (
-            <div>
+            <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
                 <h1><Link to="/"> Email-chat </Link></h1>
-                <p>{`Мы отправили вам письмо с подтверждением на почту: ${email}`}</p>
+                <h2>{`Мы отправили вам письмо с подтверждением на почту: ${email}`}</h2>
             </div>
         );
     }
