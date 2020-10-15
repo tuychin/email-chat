@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
     Route,
@@ -14,4 +15,9 @@ export default function PublicRoute({ component: Component, authenticated, ...re
                     <Component {...props} />}
         />
     )
+}
+
+PublicRoute.propTypes = {
+    component: PropTypes.object,
+    authenticated: PropTypes.bool,
 }

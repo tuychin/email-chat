@@ -1,11 +1,10 @@
 import React, { PureComponent } from 'react';
+import Bevis from 'bevis';
 import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../helpers/auth';
 
 import Confirm from '../../components/Confirm';
 
 import './login.scss';
-
-const Bevis = require('bevis');
 
 const block = new Bevis('login');
 
@@ -72,7 +71,6 @@ export default class Login extends PureComponent {
         const {
             showConfirm,
             email,
-            error,
         } = this.state;
 
         return (

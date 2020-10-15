@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import {
     Route,
@@ -14,4 +15,10 @@ export default function PrivateRoute({ component: Component, authenticated, ...r
                     <Redirect to={{ pathname: '/', state: { from: props.location } }} />}
         />
     )
+}
+
+PrivateRoute.propTypes = {
+    component: PropTypes.object,
+    authenticated: PropTypes.bool,
+    location: PropTypes.object,
 }

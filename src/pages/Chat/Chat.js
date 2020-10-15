@@ -1,9 +1,12 @@
-import React, { memo, useEffect } from 'react';
+import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
+import Bevis from 'bevis';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import { Link } from 'react-router-dom';
 import getCurrentTime from '../../helpers/getCurrentTime';
 import { signOut } from '../../helpers/auth';
 import { db, auth } from '../../services/firebase';
-import { useSelector, useDispatch } from 'react-redux';
 import {
     setCurrentUser,
     setCurrentMember,
@@ -27,33 +30,47 @@ import Dialogs from '../../components/Dialogs';
 
 import './chat.scss';
 
-const Bevis = require('bevis');
-
 const block = new Bevis('chat');
 
-export default memo(function Chat() {
-    const dispatch = useDispatch();
+class Chat extends PureComponent {
+    static propTypes = {
+        setCurrentUser: PropTypes.func,
+        setCurrentMember: PropTypes.func,
+        setCurrentDialog: PropTypes.func,
+        setDialogs: PropTypes.func,
+        setMessages: PropTypes.func,
+        setError: PropTypes.func,
+        clearError: PropTypes.func,
+        showErrorMessage: PropTypes.func,
 
-    const currentUser = useSelector(selectCurrentUser);
-    const currentMember = useSelector(selectCurrentMember);
-    const currentDialog = useSelector(selectCurrentDialog);
-    const dialogs = useSelector(selectDialogs);
-    const messages = useSelector(selectMessages);
-    const error = useSelector(selectError);
+        currentUser: PropTypes.object,
+        currentMember: PropTypes.string,
+        currentDialog: PropTypes.string,  
+        dialogs: PropTypes.array,
+        messages: PropTypes.array,
+        error: PropTypes.object,
+    }
 
-    useEffect(() => {
-        if (auth().currentUser) {
-            dispatch(setCurrentUser(auth().currentUser));
-            fetchDialogs(auth().currentUser);
-        }
+    componentDidMount() {
+        const {setCurrentUser} = this.props;
+        const {uid, email, displayName} = auth().currentUser;
 
-        if (error) dispatch(showErrorMessage(error));
-    }, [error]);
+        setCurrentUser({uid, email, displayName});
+        this.fetchDialogs(auth().currentUser);
+    }
+    
+    componentDidUpdate() {
+        const {showErrorMessage, error} = this.props;
 
-    async function createDialog(email) {
-        dispatch(clearError());
+        if (error) showErrorMessage(error);
+    }
 
-        if (checkDialogExist(email)) return;
+    createDialog = (email) => {
+        const {clearError, setCurrentDialog, setError} = this.props;
+
+        clearError();
+
+        if (this.checkDialogExist(email)) return;
 
         db.ref('users')
             .orderByChild('email')
@@ -63,55 +80,59 @@ export default memo(function Chat() {
                 /**check user exist */
                 if (snapshot.exists()) {
                     console.warn('User exist');
-                    dispatch(clearError());
+                    clearError();
                     try {
-                        dispatch(clearError());
+                        clearError();
 
                         /**add dialog to /dialogs */
                         db.ref('dialogs')
                             .push(true)
                             .then((res) => {
-                                dispatch(setCurrentDialog(res.key));
-                                fetchMessages(res.key);
+                                setCurrentDialog(res.key);
+                                this.fetchMessages(res.key);
                             })
                             .then(() => {
-                                addDialogToAnotherUser(email);
+                                this.addDialogToAnotherUser(email);
                             })
                             .then(() => {
-                                addDialogToCurrentUser(email);
+                                this.addDialogToCurrentUser(email);
                             })
                             .catch((error) => {
                                 console.error(error);
-                                dispatch(setError(error.message));
+                                setError(error.message);
                             });
             
                     } catch (error) {
                         console.error(error);
-                        dispatch(setError(error.message));
+                        setError(error.message);
                     }
                 } else {
-                    dispatch(setError('Данный пользователь не зарегистрирован'));
+                    setError('Данный пользователь не зарегистрирован');
                     console.warn('User not exist');
                 }
 
             });
     }
 
-    function checkDialogExist(email) {
+    checkDialogExist = (email) => {
+        const {dialogs, setError} = this.props;
+
         let isDialogAlredyExist = false;
 
         dialogs.forEach(dialog => {
             if (dialog.member === email) {
                 isDialogAlredyExist = true;
-                selectDialog(dialog.dialogId);
-                dispatch(setError('Такой диалог уже существует'));
+                this.selectDialog(dialog.dialogId);
+                setError('Такой диалог уже существует');
             }
         });
 
         return isDialogAlredyExist;
     }
 
-    async function addDialogToCurrentUser(anotherUserEmail) {
+    addDialogToCurrentUser =  async (anotherUserEmail) => {
+        const {currentUser, currentDialog, setError} = this.props;
+
         try {
             await db.ref(`users/${currentUser.uid}/dialogs`)
                 .child(currentDialog)
@@ -121,11 +142,13 @@ export default memo(function Chat() {
                 });
         } catch (error) {
             console.error(error);
-            dispatch(setError(error.message));
+            setError(error.message);
         }
     }
 
-    async function addDialogToAnotherUser(email) {
+    addDialogToAnotherUser = async (email) => {
+        const {currentUser, currentDialog, setError} = this.props;
+
         try {
             /**get user id by email */
             await db.ref('users')
@@ -145,12 +168,14 @@ export default memo(function Chat() {
                 });
         } catch (error) {
             console.error(error);
-            dispatch(setError(error.message));
+            setError(error.message);
         }
     }
 
-    function fetchDialogs(currentUser) {
-        dispatch(clearError());
+    fetchDialogs = (currentUser) => {
+        const {setDialogs, clearError, setError} = this.props;
+
+        clearError();
 
         try {
             db.ref(`users/${currentUser.uid}/dialogs`)
@@ -161,22 +186,26 @@ export default memo(function Chat() {
                         dialogs.push(snap.val());
                     });
 
-                    dispatch(setDialogs(dialogs));
+                    setDialogs(dialogs);
                 });
         } catch (error) {
             console.error(error);
-            dispatch(setError(error.message));
+            setError(error.message);
         }
     }
 
-    function selectDialog(dialogId, memberName) {
-        dispatch(setCurrentDialog(dialogId));
-        dispatch(setCurrentMember(memberName));
-        fetchMessages(dialogId);
+    selectDialog = (dialogId, memberName) => {
+        const {setCurrentDialog, setCurrentMember} = this.props;
+
+        setCurrentDialog(dialogId);
+        setCurrentMember(memberName);
+        this.fetchMessages(dialogId);
     }
 
-    async function sendMessage(content) {
-        dispatch(clearError());
+    sendMessage = async (content) => {
+        const {currentUser, currentDialog, setError, clearError} = this.props;
+
+        clearError();
 
         try {
             await db.ref(`dialogs/${currentDialog}`)
@@ -193,13 +222,15 @@ export default memo(function Chat() {
                 })
         } catch (error) {
             console.error(error);
-            dispatch(setError(error.message));
+            setError(error.message);
         }
     }
 
-    function fetchMessages(dialogId) {
+    fetchMessages = (dialogId) => {
+        const {setMessages, currentDialog, setError, clearError} = this.props;
+
         if (dialogId || currentDialog) {
-            dispatch(clearError());
+            clearError();
 
             try {
                 db.ref(`dialogs/${dialogId || currentDialog}`)
@@ -210,43 +241,75 @@ export default memo(function Chat() {
                             messages.push(snap.val());
                         });
         
-                        dispatch(setMessages(messages));
+                        setMessages(messages);
                     });
             } catch (error) {
                 console.error(error);
-                dispatch(setError(error.message));
+                setError(error.message);
             }
         }
     }
 
-    return (
-        <div className={block.name()}>
-            <div className={`${block.elem('container')} container`}>
-                <div className={`${block.elem('row')} row`}>
-                    <div className={`${block.elem('col')} col-md-4`}>
-                        <Dialogs
-                            currentDialog={currentDialog}
-                            dialogs={dialogs}
-                            createDialog={createDialog}
-                            selectDialog={selectDialog}
-                        />
-                    </div>
-                    <div className={`${block.elem('col')} col-md-8`}>
-                        <MessageHistory
-                            user={currentUser}
-                            member={currentMember}
-                            dialog={currentDialog}
-                            messages={messages}
-                            submit={sendMessage}
-                            signOut={signOut}
-                        />
-                    </div>
-                    <div>
-                        Вход выполнен через: <strong>{currentUser.email}</strong>
-                        <Link to="/" onClick={signOut}> Выйти </Link>
+    render() {
+        const {
+            currentUser,
+            currentMember,
+            currentDialog,
+            dialogs,
+            messages,
+        } = this.props;
+
+        return (
+            <div className={block.name()}>
+                <div className={`${block.elem('container')} container`}>
+                    <div className={`${block.elem('row')} row`}>
+                        <div className={`${block.elem('col')} col-md-4`}>
+                            <Dialogs
+                                currentDialog={currentDialog}
+                                dialogs={dialogs}
+                                createDialog={this.createDialog}
+                                selectDialog={this.selectDialog}
+                            />
+                        </div>
+                        <div className={`${block.elem('col')} col-md-8`}>
+                            <MessageHistory
+                                user={currentUser}
+                                member={currentMember}
+                                dialog={currentDialog}
+                                messages={messages}
+                                submit={this.sendMessage}
+                                signOut={signOut}
+                            />
+                        </div>
+                        <div>
+                            Вход выполнен через: <strong>{currentUser.email}</strong>
+                            <Link to="/" onClick={signOut}> Выйти </Link>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    }
+}
+
+const mapStateToProps = (state) => ({
+    currentUser: selectCurrentUser(state),
+    currentMember: selectCurrentMember(state),
+    currentDialog: selectCurrentDialog(state),
+    dialogs: selectDialogs(state),
+    messages: selectMessages(state),
+    error: selectError(state),
 });
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+    setCurrentUser,
+    setCurrentMember,
+    setCurrentDialog,
+    setDialogs,
+    setMessages,
+    setError,
+    clearError,
+    showErrorMessage,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat);

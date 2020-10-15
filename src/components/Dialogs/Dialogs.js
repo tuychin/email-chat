@@ -1,10 +1,9 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
+import Bevis from 'bevis';
 
 import './dialogs.scss';
 import Loader from '../Loader';
-
-const Bevis = require('bevis');
 
 const block = new Bevis('dialogs');
 

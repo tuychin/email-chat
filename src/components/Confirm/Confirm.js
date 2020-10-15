@@ -1,13 +1,16 @@
 import React, { PureComponent } from 'react';
-import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import Bevis from 'bevis';
 
 import './confirm.scss';
-
-const Bevis = require('bevis');
 
 const block = new Bevis('confirm');
 
 class Confirm extends PureComponent {
+    static propTypes = {
+        email: PropTypes.string.isRequired,
+    }
+
     render() {
         const {email} = this.props;
 

@@ -1,7 +1,6 @@
 {
     "env": {
-        "browser": true,
-        "es2020": true
+        "browser": true
     },
     "parser": "babel-eslint",
     "extends": [
@@ -18,6 +17,12 @@
     "plugins": [
         "react"
     ],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
     "rules": {
+        "no-console": "off"
     }
 }

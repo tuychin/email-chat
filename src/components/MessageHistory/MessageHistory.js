@@ -1,10 +1,9 @@
 import React, { PureComponent } from 'react';
+import Bevis from 'bevis';
 import PropTypes from 'prop-types';
 
 import './message-history.scss';
 import Loader from '../Loader';
-
-const Bevis = require('bevis');
 
 const block = new Bevis('message-history');
 
@@ -17,6 +16,7 @@ export default class MessageHistory extends PureComponent {
         dialog: PropTypes.string,
         messages: PropTypes.array,
         user: PropTypes.object.isRequired,
+        member: PropTypes.string.isRequired,
         submit: PropTypes.func.isRequired,
         signOut: PropTypes.func.isRequired,
     }
@@ -100,7 +100,6 @@ export default class MessageHistory extends PureComponent {
         const {content} = this.state;
 
         const {
-            user,
             member,
             dialog,
             messages,
