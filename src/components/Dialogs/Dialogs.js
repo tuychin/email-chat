@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Bevis from 'bevis';
 import {connect} from 'react-redux';
@@ -9,7 +9,8 @@ import {
 
     createDialog,
     chooseDialog,
-} from '../../pages/Chat/chatSlice.js';
+} from '../../pages/Chat/chatSlice';
+import {openMenu} from '../../components/Menu/menuSlice';
 
 import './dialogs.scss';
 import Loader from '../Loader';
@@ -26,6 +27,7 @@ class Dialogs extends PureComponent {
         currentDialog: PropTypes.string,
         createDialog: PropTypes.func.isRequired,
         chooseDialog: PropTypes.func.isRequired,
+        openMenu: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
@@ -61,30 +63,18 @@ class Dialogs extends PureComponent {
         const {email} = this.state;
         const {
             dialogs,
+            openMenu,
         } = this.props;
 
         return (
             <div className={block.name()}>
                 <div className={block.elem('header')}>
-                    <form
-                        className={`${block.elem('form')} form-group`}
-                        onSubmit={this.handleCreateDialog}
+                    <button
+                        className={`${block.elem('button')} btn btn-primary`}
+                        onClick={openMenu}
                     >
-                        <input
-                            className={`${block.elem('input')} form-control`}
-                            onChange={this.handleChangeForm}
-                            value={email}
-                            placeholder="email"
-                            required
-                        />
-
-                        <button
-                            className={`${block.elem('button')} btn btn-primary`}
-                            type="submit"
-                        >
-                            Создать диалог
-                        </button>
-                    </form>
+                        ☰
+                    </button>
                 </div>
 
                 {dialogs.length
@@ -109,6 +99,28 @@ class Dialogs extends PureComponent {
                         </div>
                     )
                 }
+
+                <div className={block.elem('footer')}>
+                    <form
+                        className={`${block.elem('form')} form-group`}
+                        onSubmit={this.handleCreateDialog}
+                    >
+                        <input
+                            className={`${block.elem('input')} form-control`}
+                            onChange={this.handleChangeForm}
+                            value={email}
+                            placeholder="email"
+                            required
+                        />
+
+                        <button
+                            className={`${block.elem('button')} btn btn-primary`}
+                            type="submit"
+                        >
+                            Создать диалог
+                        </button>
+                    </form>
+                </div>
             </div>
         );
     }
@@ -122,6 +134,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     createDialog,
     chooseDialog,
+    openMenu,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dialogs);

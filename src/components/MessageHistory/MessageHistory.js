@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import Bevis from 'bevis';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
@@ -10,7 +10,7 @@ import {
     selectMessages,
 
     sendMessage,
-} from '../../pages/Chat/chatSlice.js';
+} from '../../pages/Chat/chatSlice';
 
 import './message-history.scss';
 import Loader from '../Loader';

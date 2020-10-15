@@ -1,0 +1,7 @@
+.menu {
+    &._open {
+        .modal {
+            display: inherit;
+        }
+    }
+}

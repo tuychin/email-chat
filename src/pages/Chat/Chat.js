@@ -1,11 +1,9 @@
-import React, { PureComponent } from 'react';
+import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import Bevis from 'bevis';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import { Link } from 'react-router-dom';
-import { auth } from '../../services/firebase';
-import { signOut } from '../../helpers/auth';
+import {auth} from '../../services/firebase';
 import {
     setCurrentUser,
     fetchDialogs,
@@ -20,6 +18,7 @@ import {
 } from './chatSlice';
 
 import MessageHistory from '../../components/MessageHistory';
+import Menu from '../../components/Menu';
 import Dialogs from '../../components/Dialogs';
 
 import './chat.scss';
@@ -42,9 +41,8 @@ class Chat extends PureComponent {
 
     componentDidMount() {
         const {setCurrentUser, fetchDialogs} = this.props;
-        const {uid, email, displayName} = auth().currentUser;
 
-        setCurrentUser({uid, email, displayName});
+        setCurrentUser(auth().currentUser);
         fetchDialogs(auth().currentUser);
     }
     
@@ -55,21 +53,16 @@ class Chat extends PureComponent {
     }
 
     render() {
-        const {currentUser} = this.props;
-
         return (
             <div className={block.name()}>
                 <div className={`${block.elem('container')} container`}>
                     <div className={`${block.elem('row')} row`}>
                         <div className={`${block.elem('col')} col-md-4`}>
+                            <Menu />
                             <Dialogs />
                         </div>
                         <div className={`${block.elem('col')} col-md-8`}>
                             <MessageHistory />
-                        </div>
-                        <div>
-                            Вход выполнен через: <strong>{currentUser.email}</strong>
-                            <Link to="/" onClick={signOut}> Выйти </Link>
                         </div>
                     </div>
                 </div>

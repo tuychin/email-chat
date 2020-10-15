@@ -74,6 +74,22 @@ const checkDialogExist = (email) => (dispatch, getState) => {
     return isDialogAlredyExist;
 }
 
+export const setCurrentUserData = (key, value) => async (dispatch, getState) => {
+    const {currentUser, currentDialog} = getState().chat;
+
+    try {
+        await db.ref(`users/${currentUser.uid}/dialogs`)
+            .child(currentDialog)
+            .set({
+                [key]: value,
+            });
+    } catch (error) {
+        console.error(error);
+        dispatch(setError(error.message));
+    }
+}
+
+
 const addDialogToCurrentUser = (anotherUserEmail) => async (dispatch, getState) => {
     const {currentUser, currentDialog} = getState().chat;
 
