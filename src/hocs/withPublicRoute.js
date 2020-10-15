@@ -18,6 +18,6 @@ export default function PublicRoute({ component: Component, authenticated, ...re
 }
 
 PublicRoute.propTypes = {
-    component: PropTypes.object,
+    component: PropTypes.func,
     authenticated: PropTypes.bool,
 }

@@ -1,13 +1,23 @@
 import React, { PureComponent } from 'react';
 import Bevis from 'bevis';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {
+    selectCurrentUser,
+    selectCurrentMember,
+    selectCurrentDialog,
+    selectMessages,
+
+    sendMessage,
+} from '../../pages/Chat/chatSlice.js';
 
 import './message-history.scss';
 import Loader from '../Loader';
 
 const block = new Bevis('message-history');
 
-export default class MessageHistory extends PureComponent {
+class MessageHistory extends PureComponent {
     state = {
         content: '',
     }
@@ -17,13 +27,16 @@ export default class MessageHistory extends PureComponent {
         messages: PropTypes.array,
         user: PropTypes.object.isRequired,
         member: PropTypes.string.isRequired,
-        submit: PropTypes.func.isRequired,
-        signOut: PropTypes.func.isRequired,
+        sendMessage: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
         dialog: '',
         messages: [],
+    }
+
+    componentDidMount() {
+        this.scrollToBottom();
     }
 
     componentDidUpdate() {
@@ -43,11 +56,11 @@ export default class MessageHistory extends PureComponent {
     sendMessage = async (event) => {
         event.preventDefault();
         const {content} = this.state;
-        const {submit} = this.props;
+        const {sendMessage} = this.props;
 
         if (this.сheckNoLetters(content)) return;
 
-        await submit(content);
+        await sendMessage(content);
         this.setState({content: ''});
     }
 
@@ -154,3 +167,16 @@ export default class MessageHistory extends PureComponent {
         );
     }
 }
+
+const mapStateToProps = (state) => ({
+    user: selectCurrentUser(state),
+    member: selectCurrentMember(state),
+    dialog: selectCurrentDialog(state),
+    messages: selectMessages(state),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+    sendMessage,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessageHistory);

@@ -1,6 +1,15 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import Bevis from 'bevis';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {
+    selectCurrentDialog,
+    selectDialogs,
+
+    createDialog,
+    chooseDialog,
+} from '../../pages/Chat/chatSlice.js';
 
 import './dialogs.scss';
 import Loader from '../Loader';
@@ -16,7 +25,7 @@ class Dialogs extends PureComponent {
         dialogs: PropTypes.array,
         currentDialog: PropTypes.string,
         createDialog: PropTypes.func.isRequired,
-        selectDialog: PropTypes.func.isRequired,
+        chooseDialog: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
@@ -24,13 +33,13 @@ class Dialogs extends PureComponent {
         currentDialog: '',
     }
 
-    handleChange = (event) => {
+    handleChangeForm = (event) => {
         this.setState({
             email: event.target.value
         });
     }
 
-    createDialog = (evt) => {
+    handleCreateDialog = (evt) => {
         evt.preventDefault();
         const {email} = this.state;
         const {createDialog} = this.props;
@@ -39,13 +48,13 @@ class Dialogs extends PureComponent {
         this.setState({email: ''});
     }
 
-    selectDialog = (evt) => {
+    handleChooseDialog = (evt) => {
         evt.preventDefault();
-        const {selectDialog} = this.props;
+        const {chooseDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
         const memberName = evt.target.dataset.memberName;
 
-        selectDialog(dialogId, memberName);
+        chooseDialog(dialogId, memberName);
     }
 
     render() {
@@ -59,11 +68,11 @@ class Dialogs extends PureComponent {
                 <div className={block.elem('header')}>
                     <form
                         className={`${block.elem('form')} form-group`}
-                        onSubmit={this.createDialog}
+                        onSubmit={this.handleCreateDialog}
                     >
                         <input
                             className={`${block.elem('input')} form-control`}
-                            onChange={this.handleChange}
+                            onChange={this.handleChangeForm}
                             value={email}
                             placeholder="email"
                             required
@@ -84,7 +93,7 @@ class Dialogs extends PureComponent {
                             {dialogs.map(dialog => (
                                 <li
                                     className={`${block.elem('list-item')} list-group-item list-group-item-action`}
-                                    onClick={this.selectDialog}
+                                    onClick={this.handleChooseDialog}
                                     data-dialog-id={dialog.dialogId}
                                     data-member-name={dialog.member}
                                     key={dialog.dialogId}
@@ -105,4 +114,14 @@ class Dialogs extends PureComponent {
     }
 }
 
-export default Dialogs;
+const mapStateToProps = (state) => ({
+    currentDialog: selectCurrentDialog(state),
+    dialogs: selectDialogs(state),
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+    createDialog,
+    chooseDialog,
+}, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Dialogs);
