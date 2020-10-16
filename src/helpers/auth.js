@@ -61,7 +61,6 @@ async function addNewUser(res) {
         await db.ref(`users/${user.uid}`)
             .set({
                 uid: user.uid,
-                timestamp: Date.now(),
                 email: user.email,
             });
     }
