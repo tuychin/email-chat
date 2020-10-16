@@ -9,6 +9,7 @@ import {
     selectCurrentUser,
     selectCurrentMember,
     selectCurrentDialog,
+    selectDialogs,
     selectMessages,
 
     sendMessage,
@@ -26,7 +27,8 @@ class MessageHistory extends PureComponent {
     }
 
     static propTypes = {
-        dialog: PropTypes.string,
+        currentDialog: PropTypes.string,
+        dialogs: PropTypes.array,
         messages: PropTypes.array,
         user: PropTypes.object.isRequired,
         member: PropTypes.string.isRequired,
@@ -108,21 +110,44 @@ class MessageHistory extends PureComponent {
         )
     }
 
+    renderMessagesPlaceholder = () => {
+        const {messages} = this.props;
+
+        if (messages === null) {
+            return (
+                <div className={block.elem('placeholder')}>
+                    <Loader />
+                </div>
+            );
+        }
+
+        return (
+            <div className={block.elem('placeholder')}>
+                <div className="h-100 d-flex justify-content-center align-items-center p-2">
+                    <h2 className="text-center">Напишите первое сообщение</h2>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         const {content} = this.state;
 
         const {
             member,
-            dialog,
+            dialogs,
+            currentDialog,
             messages,
             closeMessages,
         } = this.props;
 
         return (
             <div className={`${block.name()}`}>
-                {!dialog ? (
+                {!currentDialog ? (
                     <div className="vh-100 d-flex justify-content-center align-items-center p-2">
-                        <h2 className="text-center">Выберите, кому хотели бы написать</h2>
+                        {(dialogs && dialogs.length) ? (
+                            <h2 className="text-center">Выберите, кому хотели бы написать</h2>
+                        ) : ''}
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>
@@ -141,18 +166,14 @@ class MessageHistory extends PureComponent {
                             </div>
                         </div>
 
-                        {messages.length ? (
+                        {messages && messages.length ? (
                             <div
                                 className={`${block.elem('messages')}`}
                                 ref={this.messagesRef}
                             >
                                 {messages.map((message) => this.renderMessage(message))}
                             </div>
-                        ) : (
-                            <div className={block.elem('loader')}>
-                                <Loader />
-                            </div>
-                        )}
+                        ) : this.renderMessagesPlaceholder()}
 
                         <form
                             className={`${block.elem('form')} form-group`}
@@ -182,7 +203,8 @@ class MessageHistory extends PureComponent {
 const mapStateToProps = (state) => ({
     user: selectCurrentUser(state),
     member: selectCurrentMember(state),
-    dialog: selectCurrentDialog(state),
+    dialogs: selectDialogs(state),
+    currentDialog: selectCurrentDialog(state),
     messages: selectMessages(state),
 });
 

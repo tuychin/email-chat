@@ -78,7 +78,7 @@ export default class App extends Component {
                             <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
                             <Route render={() => (
                                 <div className="text-center vh-100 d-flex justify-content-center align-items-center">
-                                    <h2>404<br/>Страница не найдена</h2>
+                                    <h2>Ошибка 404<br/>Страница не найдена</h2>
                                 </div>
                             )} />
                         </Switch>

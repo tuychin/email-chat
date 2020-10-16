@@ -60,14 +60,14 @@ class Dialogs extends PureComponent {
 
         if (dialogs === null) {
             return (
-                <div className={block.elem('loader')}>
+                <div className={block.elem('placeholder')}>
                     <Loader />
                 </div>
             );
         }
 
         return (
-            <div className={block.elem('loader')}>
+            <div className={block.elem('placeholder')}>
                 <div className="h-100 d-flex justify-content-center align-items-center p-2">
                     <h2 className="text-center">Создайте диалог</h2>
                 </div>
