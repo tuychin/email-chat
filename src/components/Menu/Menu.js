@@ -1,5 +1,6 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
+import {Link} from 'react-router-dom';
 import {signOut} from '../../helpers/auth';
 import {db, auth} from '../../services/firebase';
 
@@ -119,7 +120,7 @@ class Menu extends PureComponent {
                     <div className="modal-dialog" role="document">
                         <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">Профиль: <strong>{currentUser.email}</strong></h5>
+                            <h5 className="modal-title">{currentUser.email}</h5>
                             <button
                                 type="button"
                                 className="close"
@@ -150,13 +151,13 @@ class Menu extends PureComponent {
                         </div>
 
                         <div className="modal-footer d-flex justify-content-between">
-                            <button
-                                type="button"
-                                className="btn btn-warning"
+                            <Link
+                                className="text-danger"
                                 onClick={this.handleSignOut}
+                                to="/"
                             >
-                                Выйти из профиля
-                            </button>
+                                Выйти
+                            </Link>
                             <button
                                 type="button"
                                 className="btn btn-secondary"
