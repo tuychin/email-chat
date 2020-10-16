@@ -34,11 +34,6 @@ class MessageHistory extends PureComponent {
         closeMessages: PropTypes.func.isRequired,
     }
 
-    static defaultProps = {
-        dialog: '',
-        messages: [],
-    }
-
     componentDidMount() {
         this.scrollToBottom();
     }
@@ -126,7 +121,7 @@ class MessageHistory extends PureComponent {
         return (
             <div className={`${block.name()}`}>
                 {!dialog ? (
-                    <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
+                    <div className="vh-100 d-flex justify-content-center align-items-center p-2">
                         <h2 className="text-center">Выберите, кому хотели бы написать</h2>
                     </div>
                 ) : (

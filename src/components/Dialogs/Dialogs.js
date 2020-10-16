@@ -4,7 +4,6 @@ import Bevis from 'bevis';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
-    selectCurrentDialog,
     selectDialogs,
 
     createDialog,
@@ -25,16 +24,10 @@ class Dialogs extends PureComponent {
 
     static propTypes = {
         dialogs: PropTypes.array,
-        currentDialog: PropTypes.string,
         createDialog: PropTypes.func.isRequired,
         chooseDialog: PropTypes.func.isRequired,
         openMenu: PropTypes.func.isRequired,
         openMessages: PropTypes.func.isRequired,
-    }
-
-    static defaultProps = {
-        dialogs: [],
-        currentDialog: '',
     }
 
     handleChangeForm = (event) => {
@@ -62,6 +55,26 @@ class Dialogs extends PureComponent {
         openMessages();
     }
 
+    renderDialogsPlaceholder = () => {
+        const {dialogs} = this.props;
+
+        if (dialogs === null) {
+            return (
+                <div className={block.elem('loader')}>
+                    <Loader />
+                </div>
+            );
+        }
+
+        return (
+            <div className={block.elem('loader')}>
+                <div className="h-100 d-flex justify-content-center align-items-center p-2">
+                    <h2 className="text-center">Создайте диалог</h2>
+                </div>
+            </div>
+        );
+    }
+
     render() {
         const {email} = this.state;
         const {
@@ -80,7 +93,7 @@ class Dialogs extends PureComponent {
                     </button>
                 </div>
 
-                {dialogs.length ? (
+                {dialogs && dialogs.length ? (
                     <ul className={`${block.elem('list')} list-group`}>
                         {dialogs.map(dialog => (
                             <li
@@ -95,11 +108,7 @@ class Dialogs extends PureComponent {
                             </li>
                         ))}
                     </ul>
-                ) : (
-                    <div className={block.elem('loader')}>
-                        <Loader />
-                    </div>
-                )}
+                ) : this.renderDialogsPlaceholder()}
 
                 <div className={block.elem('footer')}>
                     <form
@@ -128,7 +137,6 @@ class Dialogs extends PureComponent {
 }
 
 const mapStateToProps = (state) => ({
-    currentDialog: selectCurrentDialog(state),
     dialogs: selectDialogs(state),
 });
 
