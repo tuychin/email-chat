@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
     Route,
     BrowserRouter as Router,
     Switch,
 } from 'react-router-dom';
-import { Provider } from 'react-redux';
+import {Provider} from 'react-redux';
 import store from './store';
 
 import PrivateRoute from './hocs/withPrivateRoute';
@@ -12,8 +12,8 @@ import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
-import { auth } from './services/firebase';
-import { checkConfirmEmail } from './helpers/auth';
+import {auth} from './services/firebase';
+import {checkConfirmEmail} from './helpers/auth';
 
 import 'bootswatch/dist/solar/bootstrap.min.css';
 

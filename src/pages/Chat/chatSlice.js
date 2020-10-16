@@ -19,6 +19,7 @@ export const chatSlice = createSlice({
             state.currentUser.uid = action.payload.uid;
             state.currentUser.email = action.payload.email;
             state.currentUser.displayName = action.payload.displayName;
+            state.currentUser.theme = action.payload.theme || 'default';
         },
         setCurrentMember: (state, action) => {
             state.currentMember = action.payload;
@@ -74,13 +75,12 @@ const checkDialogExist = (email) => (dispatch, getState) => {
     return isDialogAlredyExist;
 }
 
-export const setCurrentUserData = (key, value) => async (dispatch, getState) => {
-    const {currentUser, currentDialog} = getState().chat;
+export const updateUserData = (key, value) => async (dispatch, getState) => {
+    const {currentUser} = getState().chat;
 
     try {
-        await db.ref(`users/${currentUser.uid}/dialogs`)
-            .child(currentDialog)
-            .set({
+        await db.ref(`users/${currentUser.uid}`)
+            .update({
                 [key]: value,
             });
     } catch (error) {
@@ -154,8 +154,7 @@ export function createDialog(email) {
                         db.ref('dialogs')
                             .push(true)
                             .then((res) => {
-                                dispatch(setCurrentDialog(res.key));
-                                dispatch(fetchMessages(res.key));
+                                dispatch(chooseDialog(res.key, email));
                             })
                             .then(() => {
                                 dispatch(addDialogToAnotherUser(email));

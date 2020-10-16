@@ -8,7 +8,10 @@ import {
     closeMenu,
     selectMenuIsOpen,
 } from '../../components/Menu/menuSlice';
-import {selectCurrentUser} from '../../pages/Chat/chatSlice';
+import {
+    selectCurrentUser,
+    updateUserData,
+} from '../../pages/Chat/chatSlice';
 
 import Bevis from 'bevis';
 
@@ -21,6 +24,7 @@ class Menu extends PureComponent {
         menuIsOpen: PropTypes.bool,
         closeMenu: PropTypes.func.isRequired,
         currentUser: PropTypes.object.isRequired,
+        updateUserData: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
@@ -36,8 +40,19 @@ class Menu extends PureComponent {
         signOut();
     }
 
+    handleChooseTheme = (evt) => {
+        const {updateUserData} = this.props;
+        const chosenTheme = evt.target.value.toLowerCase();
+
+        updateUserData('theme', chosenTheme);
+    }
+
     render() {
-        const {menuIsOpen, closeMenu, currentUser} = this.props;
+        const {
+            menuIsOpen,
+            closeMenu,
+            currentUser,
+        } = this.props;
 
         return (
             <div className={block.name(menuIsOpen && 'open')}>
@@ -60,12 +75,33 @@ class Menu extends PureComponent {
                         <div className="modal-body">
                             <div className="form-group">
                                 <label htmlFor="chooseTheme">Тема:</label>
-                                <select className="form-control" id="chooseTheme">
-                                    <option>1</option>
-                                    <option>2</option>
-                                    <option>3</option>
-                                    <option>4</option>
-                                    <option>5</option>
+                                <select
+                                    className="form-control"
+                                    id="chooseTheme"
+                                    onChange={this.handleChooseTheme}
+                                >
+                                    <option data-theme="default">Default</option>
+                                    <option data-theme="cerulean">Cerulean</option>
+                                    <option data-theme="darkly">Darkly</option>
+                                    <option data-theme="litera">Litera</option>
+                                    <option data-theme="materia">Materia</option>
+                                    <option data-theme="sandstone">Sandstone</option>
+                                    <option data-theme="slate">Slate</option>
+                                    <option data-theme="superhero">Superhero</option>
+                                    <option data-theme="cosmo">Cosmo</option>
+                                    <option data-theme="flatly">Flatly</option>
+                                    <option data-theme="lumen">Lumen</option>
+                                    <option data-theme="minty">Minty</option>
+                                    <option data-theme="simplex">Simplex</option>
+                                    <option data-theme="solar">Solar</option>
+                                    <option data-theme="united">United</option>
+                                    <option data-theme="cyborg">Cyborg</option>
+                                    <option data-theme="journal">Journal</option>
+                                    <option data-theme="lux">Lux</option>
+                                    <option data-theme="pulse">Pulse</option>
+                                    <option data-theme="sketchy">Sketchy</option>
+                                    <option data-theme="spacelab">Spacelab</option>
+                                    <option data-theme="yeti">Yeti</option>
                                 </select>
                             </div>
                         </div>
@@ -102,6 +138,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     closeMenu,
+    updateUserData,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);
