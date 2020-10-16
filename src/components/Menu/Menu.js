@@ -33,7 +33,7 @@ const themes = [
     'Materia',
     'Sandston',
     'Slate',
-    'Superherne',
+    'Superhero',
     'Cosmo',
     'Flatly',
     'Lumen',

@@ -122,7 +122,7 @@ class MessageHistory extends PureComponent {
             <div className={`${block.name()}`}>
                 {!dialog ? (
                     <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-                        <h2>Выберите, кому хотели бы написать</h2>
+                        <h3>Выберите, кому хотели бы написать</h3>
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>

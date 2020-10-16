@@ -33,7 +33,7 @@ export default class App extends Component {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 db.ref(`users/${user.uid}/settings/theme`)
-                    .on('value', snapshot => {
+                    .once('value', snapshot => {
                         const theme = snapshot.val();
 
                         if (theme && theme !== 'default') {

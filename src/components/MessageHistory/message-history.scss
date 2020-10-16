@@ -1,5 +1,7 @@
+$border: 1px solid rgba(119, 119, 119, 0.2);
+
 .message-history {
-    border-left: 1px solid rgba($color: #777, $alpha: .2);
+    border-left: $border;
 
     &__header {
         width: 100%;
@@ -8,7 +10,7 @@
         display: flex;
         justify-content: flex-end;
         align-items: center;
-        border-bottom: 1px solid rgba($color: #777, $alpha: .2);
+        border-bottom: $border;
     }
 
     &__inner {
@@ -45,7 +47,7 @@
         margin-bottom: 0 !important;
         display: flex;
         align-items: center;
-        border-top: 1px solid rgba($color: #777, $alpha: .2);
+        border-top: $border;
     }
 
     &__input {
