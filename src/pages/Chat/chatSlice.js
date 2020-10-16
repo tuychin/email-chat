@@ -10,8 +10,9 @@ export const chatSlice = createSlice({
         currentUser: {},
         currentMember: '',
         currentDialog: '',
-        dialogs: [],
-        messages: [],
+        dialogs: null,
+        messages: null,
+        isMessagesOpen: false,
         error: null,
     },
     reducers: {
@@ -31,6 +32,12 @@ export const chatSlice = createSlice({
         },
         setMessages: (state, action) => {
             state.messages = action.payload;
+        },
+        openMessages: (state, action) => {
+            state.isMessagesOpen = true;
+        },
+        closeMessages: (state, action) => {
+            state.isMessagesOpen = false;
         },
         setError: (state, action) => {
             state.error = action.payload;
@@ -52,6 +59,8 @@ export const {
     setCurrentDialog,
     setDialogs,
     setMessages,
+    openMessages,
+    closeMessages,
     setError,
     clearError,
     showErrorMessage,
@@ -268,6 +277,7 @@ export const selectCurrentMember = state => state.chat.currentMember;
 export const selectCurrentDialog = state => state.chat.currentDialog;
 export const selectDialogs = state => state.chat.dialogs;
 export const selectMessages = state => state.chat.messages;
+export const isMessagesOpen = state => state.chat.isMessagesOpen;
 export const selectError = state => state.chat.error;
 
 export default chatSlice.reducer;

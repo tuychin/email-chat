@@ -9,6 +9,7 @@ import {
 
     createDialog,
     chooseDialog,
+    openMessages,
 } from '../../pages/Chat/chatSlice';
 import {openMenu} from '../../components/Menu/menuSlice';
 
@@ -28,6 +29,7 @@ class Dialogs extends PureComponent {
         createDialog: PropTypes.func.isRequired,
         chooseDialog: PropTypes.func.isRequired,
         openMenu: PropTypes.func.isRequired,
+        openMessages: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
@@ -52,11 +54,12 @@ class Dialogs extends PureComponent {
 
     handleChooseDialog = (evt) => {
         evt.preventDefault();
-        const {chooseDialog} = this.props;
+        const {chooseDialog, openMessages} = this.props;
         const dialogId = evt.target.dataset.dialogId;
         const memberName = evt.target.dataset.memberName;
 
         chooseDialog(dialogId, memberName);
+        openMessages();
     }
 
     render() {
@@ -77,28 +80,26 @@ class Dialogs extends PureComponent {
                     </button>
                 </div>
 
-                {dialogs.length
-                    ? (
-                        <ul className={`${block.elem('list')} list-group`}>
-                            {dialogs.map(dialog => (
-                                <li
-                                    className={`${block.elem('list-item')} list-group-item list-group-item-action`}
-                                    onClick={this.handleChooseDialog}
-                                    data-dialog-id={dialog.dialogId}
-                                    data-member-name={dialog.member}
-                                    key={dialog.dialogId}
-                                    href="#"
-                                >
-                                    {dialog.member}
-                                </li>
-                            ))}
-                        </ul>
-                    ) : (
-                        <div className={block.elem('loader')}>
-                            <Loader />
-                        </div>
-                    )
-                }
+                {dialogs.length ? (
+                    <ul className={`${block.elem('list')} list-group`}>
+                        {dialogs.map(dialog => (
+                            <li
+                                className={`${block.elem('list-item')} list-group-item list-group-item-action`}
+                                onClick={this.handleChooseDialog}
+                                data-dialog-id={dialog.dialogId}
+                                data-member-name={dialog.member}
+                                key={dialog.dialogId}
+                                href="#"
+                            >
+                                {dialog.member}
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div className={block.elem('loader')}>
+                        <Loader />
+                    </div>
+                )}
 
                 <div className={block.elem('footer')}>
                     <form
@@ -135,6 +136,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     createDialog,
     chooseDialog,
     openMenu,
+    openMessages,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dialogs);

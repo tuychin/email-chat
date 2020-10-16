@@ -77,8 +77,7 @@ export default class Login extends PureComponent {
             showConfirm ? <Confirm email={email} /> : (
                 <div className={block.name()}>
                     <div className={block.elem('title')}>
-                        <h1>Добро пожаловать в Email-chat</h1>
-                        <h2>Всё что вам нужно, чтобы начать - электронная почта!</h2>
+                        <h1 className="text-center">Всё что вам нужно, чтобы начать общение - электронная почта!</h1>
                     </div>
 
                     <form className={block.elem('form')} onSubmit={this.handleSubmit}>
@@ -97,8 +96,6 @@ export default class Login extends PureComponent {
                     </form>
 
                     <div className={`${block.elem('sign-in')}`}>
-                        <p className="lead">Для входа вы можете использовать эти сервисы:</p>
-
                         <div className={block.elem('wrapper')}>
                             <button
                                 className="btn btn-secondary"

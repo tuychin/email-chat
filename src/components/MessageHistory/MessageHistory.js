@@ -1,6 +1,8 @@
 import React, {PureComponent} from 'react';
 import Bevis from 'bevis';
 import PropTypes from 'prop-types';
+import MediaQuery from 'react-responsive'
+
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
@@ -10,6 +12,7 @@ import {
     selectMessages,
 
     sendMessage,
+    closeMessages,
 } from '../../pages/Chat/chatSlice';
 
 import './message-history.scss';
@@ -28,6 +31,7 @@ class MessageHistory extends PureComponent {
         user: PropTypes.object.isRequired,
         member: PropTypes.string.isRequired,
         sendMessage: PropTypes.func.isRequired,
+        closeMessages: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
@@ -116,18 +120,30 @@ class MessageHistory extends PureComponent {
             member,
             dialog,
             messages,
+            closeMessages,
         } = this.props;
 
         return (
             <div className={`${block.name()}`}>
                 {!dialog ? (
                     <div className="vh-100 d-flex flex-column justify-content-center align-items-center">
-                        <h3>Выберите, кому хотели бы написать</h3>
+                        <h2 className="text-center">Выберите, кому хотели бы написать</h2>
                     </div>
                 ) : (
                     <div className={block.elem('inner')}>
                         <div className={block.elem('header')}>
-                            {member}
+                            <MediaQuery maxWidth={768}>
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={closeMessages}
+                                >
+                                    ←
+                                </button>
+                            </MediaQuery>
+                            <div className={block.elem('member')}>
+                                {member}
+                            </div>
                         </div>
 
                         {messages.length ? (
@@ -177,6 +193,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     sendMessage,
+    closeMessages,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(MessageHistory);

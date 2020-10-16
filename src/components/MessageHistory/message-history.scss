@@ -11,6 +11,10 @@ $border: 1px solid rgba(119, 119, 119, 0.2);
         justify-content: flex-end;
         align-items: center;
         border-bottom: $border;
+
+        @media (max-width: 768px) {
+            justify-content: space-between;
+        }
     }
 
     &__inner {

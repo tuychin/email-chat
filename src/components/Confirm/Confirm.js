@@ -16,8 +16,8 @@ class Confirm extends PureComponent {
 
         return (
             <div className={block.name()}>
-                <h1>{`Мы отправили вам письмо с подтверждением на почту: ${email}`}</h1>
-                <h2>Перейдите по ссылке в письме, чтобы войти в свой профиль.</h2>
+                <h1 className="text-center">{`Мы отправили вам письмо с подтверждением на почту: ${email}`}</h1>
+                <h2 className="text-center">Перейдите по ссылке в письме, чтобы войти в свой профиль.</h2>
             </div>
         );
     }

@@ -16,6 +16,7 @@ import {auth, db} from './services/firebase';
 import {checkConfirmEmail} from './helpers/auth';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import './app.scss';
 
 export default class App extends Component {
     state = {
