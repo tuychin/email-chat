@@ -12,10 +12,10 @@ import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
-import {auth} from './services/firebase';
+import {auth, db} from './services/firebase';
 import {checkConfirmEmail} from './helpers/auth';
 
-import 'bootswatch/dist/solar/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default class App extends Component {
     state = {
@@ -25,7 +25,24 @@ export default class App extends Component {
 
     async componentDidMount() {
         await checkConfirmEmail();
+        this.importUserTheme();
         this.checkAuth();
+    }
+
+    importUserTheme = () => {
+        auth().onAuthStateChanged((user) => {
+            if (user) {
+                db.ref(`users/${user.uid}/settings/theme`)
+                    .on('value', snapshot => {
+                        const theme = snapshot.val();
+
+                        if (theme && theme !== 'default') {
+                            import(`bootswatch/dist/${theme}/bootstrap.min.css`);
+                        }
+
+                    });
+            }
+        });
     }
 
     checkAuth = () => {
@@ -59,7 +76,7 @@ export default class App extends Component {
                             <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
                             <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
                             <Route render={() => (
-                                <div className="jumbotron text-center">
+                                <div className="text-center vh-100 d-flex justify-content-center align-items-center">
                                     <h2>404<br/>Страница не найдена</h2>
                                 </div>
                             )} />

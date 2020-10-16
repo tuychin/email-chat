@@ -102,7 +102,7 @@ class Dialogs extends PureComponent {
 
                 <div className={block.elem('footer')}>
                     <form
-                        className={`${block.elem('form')} form-group`}
+                        className={`${block.elem('form')} form-group w-100`}
                         onSubmit={this.handleCreateDialog}
                     >
                         <input

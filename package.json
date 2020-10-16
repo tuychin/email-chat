@@ -33,6 +33,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^1.4.0",
     "bevis": "^0.1.1",
+    "bootstrap": "^4.5.3",
     "bootswatch": "^4.4.1",
     "firebase": "^7.13.2",
     "prop-types": "^15.7.2",

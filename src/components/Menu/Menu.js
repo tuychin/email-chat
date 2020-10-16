@@ -1,16 +1,20 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {signOut} from '../../helpers/auth';
+import {db, auth} from '../../services/firebase';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
+    openMenu,
     closeMenu,
     selectMenuIsOpen,
+    selectTheme,
+    setTheme,
 } from '../../components/Menu/menuSlice';
 import {
     selectCurrentUser,
-    updateUserData,
+    updateUserSettings,
 } from '../../pages/Chat/chatSlice';
 
 import Bevis from 'bevis';
@@ -19,19 +23,80 @@ import './menu.scss';
 
 const block = new Bevis('menu');
 
+const themes = [
+    'Default',
+    'Solar',
+    'Minty',
+    'Cerulean',
+    'Darkly',
+    'Litera',
+    'Materia',
+    'Sandston',
+    'Slate',
+    'Superherne',
+    'Cosmo',
+    'Flatly',
+    'Lumen',
+    'Simplex',
+    'United',
+    'Cyborg',
+    'Journal',
+    'Lux',
+    'Pulse',
+    'Sketchy',
+    'Spacelab',
+    'Yeti',
+];
+
 class Menu extends PureComponent {
     static propTypes = {
         menuIsOpen: PropTypes.bool,
+        openMenu: PropTypes.func.isRequired,
         closeMenu: PropTypes.func.isRequired,
         currentUser: PropTypes.object.isRequired,
-        updateUserData: PropTypes.func.isRequired,
+        updateUserSettings: PropTypes.func.isRequired,
+        theme: PropTypes.string.isRequired,
+        setTheme: PropTypes.func.isRequired,
     };
 
     static defaultProps = {
         menuIsOpen: false,
     };
 
-    componentDidMount() {}
+    componentDidMount() {
+        this.checkMenuIsOpen();
+        this.fetchTheme();
+    }
+
+    checkMenuIsOpen = () => {
+        const {openMenu} = this.props;
+        const isOpen = localStorage.getItem('menuIsOpen');
+
+        if (isOpen) {
+            openMenu();
+            localStorage.removeItem('menuIsOpen');
+        }
+    }
+
+    fetchTheme = () => {
+        const {setTheme} = this.props;
+
+        db.ref(`users/${auth().currentUser.uid}/settings/theme`)
+            .on('value', snapshot => {
+                const theme = snapshot.val();
+
+                theme && setTheme(theme);
+            });
+    }
+
+    handleChooseTheme = (evt) => {
+        const {updateUserSettings} = this.props;
+        const chosenTheme = evt.target.value;
+
+        updateUserSettings('theme', chosenTheme);
+        localStorage.setItem('menuIsOpen', true);
+        window.location.reload();
+    }
 
     handleSignOut = () => {
         const {closeMenu} = this.props;
@@ -40,18 +105,12 @@ class Menu extends PureComponent {
         signOut();
     }
 
-    handleChooseTheme = (evt) => {
-        const {updateUserData} = this.props;
-        const chosenTheme = evt.target.value.toLowerCase();
-
-        updateUserData('theme', chosenTheme);
-    }
-
     render() {
         const {
             menuIsOpen,
             closeMenu,
             currentUser,
+            theme,
         } = this.props;
 
         return (
@@ -79,29 +138,13 @@ class Menu extends PureComponent {
                                     className="form-control"
                                     id="chooseTheme"
                                     onChange={this.handleChooseTheme}
+                                    value={theme}
                                 >
-                                    <option data-theme="default">Default</option>
-                                    <option data-theme="cerulean">Cerulean</option>
-                                    <option data-theme="darkly">Darkly</option>
-                                    <option data-theme="litera">Litera</option>
-                                    <option data-theme="materia">Materia</option>
-                                    <option data-theme="sandstone">Sandstone</option>
-                                    <option data-theme="slate">Slate</option>
-                                    <option data-theme="superhero">Superhero</option>
-                                    <option data-theme="cosmo">Cosmo</option>
-                                    <option data-theme="flatly">Flatly</option>
-                                    <option data-theme="lumen">Lumen</option>
-                                    <option data-theme="minty">Minty</option>
-                                    <option data-theme="simplex">Simplex</option>
-                                    <option data-theme="solar">Solar</option>
-                                    <option data-theme="united">United</option>
-                                    <option data-theme="cyborg">Cyborg</option>
-                                    <option data-theme="journal">Journal</option>
-                                    <option data-theme="lux">Lux</option>
-                                    <option data-theme="pulse">Pulse</option>
-                                    <option data-theme="sketchy">Sketchy</option>
-                                    <option data-theme="spacelab">Spacelab</option>
-                                    <option data-theme="yeti">Yeti</option>
+                                    {themes.map((theme) => (
+                                        <option value={theme.toLowerCase()} key={theme}>
+                                            {theme}
+                                        </option>
+                                    ))}
                                 </select>
                             </div>
                         </div>
@@ -134,11 +177,14 @@ class Menu extends PureComponent {
 const mapStateToProps = (state) => ({
     menuIsOpen: selectMenuIsOpen(state),
     currentUser: selectCurrentUser(state),
+    theme: selectTheme(state),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+    openMenu,
     closeMenu,
-    updateUserData,
+    updateUserSettings,
+    setTheme,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

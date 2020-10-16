@@ -1,6 +1,6 @@
 
-import { createSlice } from '@reduxjs/toolkit';
-import { db } from '../../services/firebase';
+import {createSlice} from '@reduxjs/toolkit';
+import {db} from '../../services/firebase';
 import getCurrentTime from '../../helpers/getCurrentTime';
 
 // Reducers
@@ -19,7 +19,6 @@ export const chatSlice = createSlice({
             state.currentUser.uid = action.payload.uid;
             state.currentUser.email = action.payload.email;
             state.currentUser.displayName = action.payload.displayName;
-            state.currentUser.theme = action.payload.theme || 'default';
         },
         setCurrentMember: (state, action) => {
             state.currentMember = action.payload;
@@ -75,21 +74,6 @@ const checkDialogExist = (email) => (dispatch, getState) => {
     return isDialogAlredyExist;
 }
 
-export const updateUserData = (key, value) => async (dispatch, getState) => {
-    const {currentUser} = getState().chat;
-
-    try {
-        await db.ref(`users/${currentUser.uid}`)
-            .update({
-                [key]: value,
-            });
-    } catch (error) {
-        console.error(error);
-        dispatch(setError(error.message));
-    }
-}
-
-
 const addDialogToCurrentUser = (anotherUserEmail) => async (dispatch, getState) => {
     const {currentUser, currentDialog} = getState().chat;
 
@@ -129,6 +113,22 @@ const addDialogToAnotherUser = (email) => async (dispatch, getState) => {
     } catch (error) {
         console.error(error);
         dispatch(setError(error.message));
+    }
+}
+
+export function updateUserSettings(key, value) {
+    return async (dispatch, getState) => {
+        const {currentUser} = getState().chat;
+
+        try {
+            await db.ref(`users/${currentUser.uid}/settings`)
+                .update({
+                    [key]: value,
+                });
+        } catch (error) {
+            console.error(error);
+            dispatch(setError(error.message));
+        }
     }
 }
 
@@ -261,7 +261,6 @@ export function fetchMessages(dialogId) {
         }
     }
 }
-
 
 // Selectors
 export const selectCurrentUser = state => state.chat.currentUser;

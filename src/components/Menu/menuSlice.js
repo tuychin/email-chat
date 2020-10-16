@@ -6,6 +6,7 @@ export const menuSlice = createSlice({
     name: 'menu',
     initialState: {
         menuIsOpen: false,
+        theme: 'default',
     },
     reducers: {
         openMenu: (state) => {
@@ -14,6 +15,9 @@ export const menuSlice = createSlice({
         closeMenu: (state) => {
             state.menuIsOpen = false;
         },
+        setTheme: (state, action) => {
+            state.theme = action.payload;
+        },
     },
 });
 
@@ -21,6 +25,7 @@ export const menuSlice = createSlice({
 export const {
     openMenu,
     closeMenu,
+    setTheme,
 } = menuSlice.actions;
 
 // Thunks
@@ -28,5 +33,6 @@ export const {
 
 // Selectors
 export const selectMenuIsOpen = state => state.menu.menuIsOpen;
+export const selectTheme = state => state.menu.theme;
 
 export default menuSlice.reducer;

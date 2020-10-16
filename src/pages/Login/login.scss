@@ -17,6 +17,10 @@
         display: flex;
     }
 
+    &__input {
+        margin-right: 5px;
+    }
+
     &__sign-in {
         display: flex;
         flex-direction: column;

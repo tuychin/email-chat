@@ -8,12 +8,6 @@ import {
     setCurrentUser,
     fetchDialogs,
     showErrorMessage,
-
-    selectCurrentUser,
-    selectCurrentMember,
-    selectCurrentDialog,
-    selectDialogs,
-    selectMessages,
     selectError,
 } from './chatSlice';
 
@@ -30,12 +24,6 @@ class Chat extends PureComponent {
         setCurrentUser: PropTypes.func,
         fetchDialogs: PropTypes.func,
         showErrorMessage: PropTypes.func,
-
-        currentUser: PropTypes.object,
-        currentMember: PropTypes.string,
-        currentDialog: PropTypes.string,  
-        dialogs: PropTypes.array,
-        messages: PropTypes.array,
         error: PropTypes.string,
     }
 
@@ -45,7 +33,7 @@ class Chat extends PureComponent {
         setCurrentUser(auth().currentUser);
         fetchDialogs(auth().currentUser);
     }
-    
+
     componentDidUpdate() {
         const {showErrorMessage, error} = this.props;
 
@@ -72,11 +60,6 @@ class Chat extends PureComponent {
 }
 
 const mapStateToProps = (state) => ({
-    currentUser: selectCurrentUser(state),
-    currentMember: selectCurrentMember(state),
-    currentDialog: selectCurrentDialog(state),
-    dialogs: selectDialogs(state),
-    messages: selectMessages(state),
     error: selectError(state),
 });
 
