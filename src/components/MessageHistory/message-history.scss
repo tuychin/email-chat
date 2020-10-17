@@ -33,6 +33,7 @@ $border: 1px solid rgba(119, 119, 119, 0.2);
     &__message {
         margin-bottom: 10px;
         display: flex;
+        text-align: right;
 
         &-inner {
             max-width: 70% !important;
@@ -71,6 +72,5 @@ $border: 1px solid rgba(119, 119, 119, 0.2);
     
     ._right {
         justify-content: flex-end;
-        text-align: right;
     }
 }
