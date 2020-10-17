@@ -82,7 +82,7 @@ class Chat extends PureComponent {
                     <MediaQuery minWidth={768}>
                         {this.renderDesktopVersion()}
                     </MediaQuery>
-                    <MediaQuery maxWidth={768}>
+                    <MediaQuery maxWidth={768}>x
                         {this.renderMobileVersion()}
                     </MediaQuery>
                 </div>

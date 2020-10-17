@@ -1,23 +1,25 @@
 /* eslint-disable no-undef */
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: "./src/index.js",
+    entry: './src/index.js',
     output: {
-        path: path.join(__dirname, "/build"),
-        filename: "bundle.js"
+        path: path.join(__dirname, '/build'),
+        filename: 'bundle.js'
     },
     module: {
         rules: [
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                use: ["babel-loader"]
+                use: ['babel-loader']
             },
             {
                 test: /\.css$/,
-                use: ["style-loader", "css-loader"]
+                use: ['style-loader', 'css-loader']
             },
             {
                 test: /\.s[ac]ss$/i,
@@ -34,7 +36,17 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./public/index.html"
-        })
+            template: './public/index.html',
+        }),
+        new CopyPlugin({
+            patterns: [
+                { from: 'public/manifest.json'},
+                { from: 'public/favicon.ico'},
+                { from: 'public/email-chat-logo.png'},
+            ],
+        }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1
+        }),
     ]
 };
