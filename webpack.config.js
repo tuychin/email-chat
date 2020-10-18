@@ -41,7 +41,6 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 { from: 'public/manifest.json'},
-                { from: 'public/service-worker.js'},
                 { from: 'public/favicon.ico'},
                 { from: 'public/email-chat-logo.png'},
             ],

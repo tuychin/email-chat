@@ -33,22 +33,25 @@
         </div>
     </div>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
-            navigator.serviceWorker.register('service-worker.js').then(function(registration) {
-              // Registration was successful
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-              // registration failed :(
-              console.error('ServiceWorker registration failed: ', err);
-            }).catch(function(err) {
-              console.log(err)
-            });
-          });
+<script type="module">
+import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/4.3.0/workbox-window.prod.mjs';
+
+// Service-worker register
+if ('serviceWorker' in navigator) { 
+    const wb = new Workbox('service-worker-workbox.js');
+
+    wb.addEventListener('installed', event => {
+        if (event.isUpdate) {
+            if (confirm(`New content is available!. Click OK to refresh`)) {
+                window.location.reload();
+            }
         } else {
-          console.warn('service worker is not supported');
+            alert(`The app is offline-ready`)
         }
-      </script>
+    });
+
+    wb.register();
+}
+</script>
 </body>
 </html>
