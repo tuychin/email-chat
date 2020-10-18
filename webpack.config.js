@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
@@ -40,10 +41,12 @@ module.exports = {
         }),
         new CopyPlugin({
             patterns: [
-                { from: 'public/manifest.json'},
-                { from: 'public/favicon.ico'},
-                { from: 'public/email-chat-logo.png'},
+                {from: 'public/assets', to: 'assets'},
+                {from: 'public/manifest.json', to: 'manifest.json'},
             ],
+        }),
+        new WorkboxPlugin.InjectManifest({
+            swSrc: './public/service-worker-workbox.js',
         }),
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1

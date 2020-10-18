@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Email-chat" />
+    <meta name="description" content="Email-chat" />
+    <meta name="theme-color" content="#ffffff" />
     <title>Email-chat</title>
-    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="assets/echat-logo-512.png" />
+    <link rel="shortcut icon" href="assets/favicon.ico">
     <link rel="manifest" href="manifest.json">
 
     <style>
@@ -38,19 +44,21 @@ import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/4.3.0
 
 // Service-worker register
 if ('serviceWorker' in navigator) { 
-    const wb = new Workbox('service-worker-workbox.js');
+    const wb = new Workbox('./service-worker-workbox.js');
 
     wb.addEventListener('installed', event => {
         if (event.isUpdate) {
-            if (confirm(`New content is available!. Click OK to refresh`)) {
+            if (confirm(`Приложение обновлено. Перезагрузить, чтобы изменения вступили в силу?`)) {
                 window.location.reload();
             }
         } else {
-            alert(`The app is offline-ready`)
+            console.log(`[service-worker]: The app is offline-ready`)
         }
     });
 
     wb.register();
+} else {
+    console.error('[service-worker]: Service worker is not supported');
 }
 </script>
 </body>
