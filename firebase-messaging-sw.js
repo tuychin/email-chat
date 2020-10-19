@@ -1,5 +1,5 @@
-const staticCacheName = 'static-cache-v0';
-const dynamicCacheName = 'dynamic-cache-v0';
+const staticCacheName = 'static-pwa-cache';
+const dynamicCacheName = 'dynamic-pwa-cache';
 
 const staticAssets = [
     './',
@@ -13,29 +13,39 @@ const staticAssets = [
     './assets/icon-512x512.png',
 ];
 
-self.addEventListener('install', async () => {
+// SW ON INSTALL
+self.addEventListener('install', async (event) => {
+    event.waitUntil(self.skipWaiting());
+
     const cache = await caches.open(staticCacheName);
-    await cache.addAll(staticAssets);
+    await cache.addAll(staticAssets)
     console.log('Service worker has been installed');
 });
 
-self.addEventListener('activate', async () => {
+// SW ON ACTIVATE
+self.addEventListener('activate', async (event) => {
+    // Controll all app tabs
+    event.waitUntil(self.clients.claim());
+
     const cachesKeys = await caches.keys();
     const checkKeys = cachesKeys.map(async key => {
         if (![staticCacheName, dynamicCacheName].includes(key)) {
             await caches.delete(key);
         }
     });
+
     // eslint-disable-next-line no-undef
     await Promise.all(checkKeys);
     console.log('Service worker has been activated');
 });
 
+// SW ON ANY REQUEST
 self.addEventListener('fetch', event => {
     console.log(`Trying to fetch ${event.request.url}`);
     event.respondWith(checkCache(event.request));
 });
 
+// SW CACHE FIRST STRATEGY
 async function checkCache(req) {
     const cachedResponse = await caches.match(req);
     return cachedResponse || checkOnline(req);
@@ -58,8 +68,8 @@ async function checkOnline(req) {
     }
 }
 
-// On receive push and show a notification
-self.addEventListener('push', function(event) {
+// SW WEB PUSH NOTIFICATION
+self.addEventListener('push', (event) => {
     let notificationData = {};
 
     try {
@@ -81,13 +91,13 @@ self.addEventListener('push', function(event) {
 });
 
 // On notification click
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', (event) => {
     // close the notification
     event.notification.close();
     // see if the current is open and if it is focus it
     // otherwise open new tab
     event.waitUntil(
-        self.clients.matchAll().then(function(clientList) {
+        self.clients.matchAll().then((clientList) => {
         
             if (clientList.length > 0) {
                 return clientList[0].focus();

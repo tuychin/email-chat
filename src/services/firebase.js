@@ -11,11 +11,16 @@ firebase.initializeApp({
 });
 
 export const registerSW =() => {
-    navigator.serviceWorker
-        .register('/firebase-messaging-sw.js')
-        .then((registration) => {
-            firebase.messaging().useServiceWorker(registration);
-        });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker
+            .register('/firebase-messaging-sw.js')
+            .then((registration) => {
+                firebase.messaging().useServiceWorker(registration);
+                registration.update();
+            });
+    } else {
+        console.error('Service worker is not supported');
+    }
 }
 
 export const askForPermissionNotifications = async () => {
