@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
-const path = require("path");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
     entry: "./src/index.js",
@@ -34,7 +36,16 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "./public/index.html"
-        })
+            template: './public/index.html',
+        }),
+        new CopyPlugin({
+            patterns: [
+                {from: 'public/assets', to: 'assets'},
+                {from: 'public/manifest.json', to: 'manifest.json'},
+            ],
+        }),
+        new webpack.optimize.LimitChunkCountPlugin({
+            maxChunks: 1
+        }),
     ]
 };
