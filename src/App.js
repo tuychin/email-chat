@@ -13,7 +13,7 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
 import {auth, db} from './services/firebase';
-import {checkConfirmEmail} from './helpers/auth';
+import {checkConfirmEmail} from './utils/auth';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.scss';

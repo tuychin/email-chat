@@ -57,14 +57,14 @@ self.addEventListener('push', function(event) {
         notificationData = {
             title: 'EChat',
             body: 'Вам пришло сообщение',
-            icon: 'assets/icon-192x192.png'
+            icon: './assets/icon-192x192.png'
         };
     }
     
     event.waitUntil(
         self.registration.showNotification(notificationData.title, {
-            body: notificationData.body,
-            icon: notificationData.icon
+            body: notificationData.custom.a.custom_data,
+            icon: './assets/icon-192x192.png',
         })
     );
 });

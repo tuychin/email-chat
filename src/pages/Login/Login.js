@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import Bevis from 'bevis';
-import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../helpers/auth';
+import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../utils/auth';
 
 import Confirm from '../../components/Confirm';
 
