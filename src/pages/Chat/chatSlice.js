@@ -1,7 +1,7 @@
 
 import {createSlice} from '@reduxjs/toolkit';
 import {db} from '../../services/firebase';
-import getCurrentTime from '../../helpers/getCurrentTime';
+import getCurrentTime from '../../utils/getCurrentTime';
 
 // Reducers
 export const chatSlice = createSlice({

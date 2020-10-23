@@ -13,12 +13,11 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
 import {
-    registerSW,
-    askForPermissionNotifications,
+    checkUserToken,
     auth,
     db
 } from './services/firebase';
-import {checkConfirmEmail} from './helpers/auth';
+import {checkConfirmEmail} from './utils/auth';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.scss';
@@ -30,7 +29,6 @@ export default class App extends Component {
     };
 
     async componentDidMount() {
-        await registerSW();
         await checkConfirmEmail();
         await this.checkAuth();
         await this.importUserTheme();
@@ -55,7 +53,7 @@ export default class App extends Component {
     checkAuth = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
-                askForPermissionNotifications();
+                checkUserToken();
 
                 this.setState({
                     authenticated: true,

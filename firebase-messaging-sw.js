@@ -1,96 +1,48 @@
-const staticCacheName = 'static-pwa-cache';
-const dynamicCacheName = 'dynamic-pwa-cache';
+/* eslint-disable no-undef */
 
-const staticAssets = [
-    './',
-    './index.html',
-    './bundle.js',
-    './manifest.json',
-    './assets/favicon.ico',
-    './assets/icon-192x192.png',
-    './assets/icon-256x256.png',
-    './assets/icon-384x384.png',
-    './assets/icon-512x512.png',
-];
+// FCM WEB PUSH NOTIFICATION
+importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-messaging.js');
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyC7Xblmorl6POclj6xzQI_-WrlCLFO7CYE',
+  authDomain: 'my-chat-c4f16.firebaseapp.com',
+  databaseURL: 'https://my-chat-c4f16.firebaseio.com',
+  projectId: 'my-chat-c4f16',
+  storageBucket: 'my-chat-c4f16.appspot.com',
+  messagingSenderId: '184412093004',
+  appId: '1:184412093004:web:114344c90c049b518c12e9'
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
 
 // SW ON INSTALL
 self.addEventListener('install', async (event) => {
     event.waitUntil(self.skipWaiting());
-
-    const cache = await caches.open(staticCacheName);
-    await cache.addAll(staticAssets)
-    console.log('Service worker has been installed');
 });
 
 // SW ON ACTIVATE
 self.addEventListener('activate', async (event) => {
     // Controll all app tabs
     event.waitUntil(self.clients.claim());
-
-    const cachesKeys = await caches.keys();
-    const checkKeys = cachesKeys.map(async key => {
-        if (![staticCacheName, dynamicCacheName].includes(key)) {
-            await caches.delete(key);
-        }
-    });
-
-    // eslint-disable-next-line no-undef
-    await Promise.all(checkKeys);
-    console.log('Service worker has been activated');
+    console.log('[Firebase SW]: Service worker has been activated');
 });
 
-// SW ON ANY REQUEST
-self.addEventListener('fetch', event => {
-    console.log(`Trying to fetch ${event.request.url}`);
-    event.respondWith(checkCache(event.request));
+// FCM ON BACKGROUND NOTIFICATION
+messaging.setBackgroundMessageHandler((payload) => {
+    const title = payload.notification.title;
+    const options = {
+        body: payload.notification.body,
+        icon: payload.notification.icon,
+    };
+
+    self.registration.showNotification(title,  options);
+    self.registration.hideNotification();
 });
 
-// SW CACHE FIRST STRATEGY
-async function checkCache(req) {
-    const cachedResponse = await caches.match(req);
-    return cachedResponse || checkOnline(req);
-}
-
-async function checkOnline(req) {
-    const cache = await caches.open(dynamicCacheName);
-
-    try {
-        const res = await fetch(req);
-        await cache.put(req, res.clone());
-
-        return res;
-    } catch (error) {
-        const cachedRes = await cache.match(req);
-
-        if (cachedRes) {
-            return cachedRes;
-        }
-    }
-}
-
-// SW WEB PUSH NOTIFICATION
-self.addEventListener('push', (event) => {
-    let notificationData = {};
-
-    try {
-        notificationData = event.data.json();
-    } catch (e) {
-        notificationData = {
-            title: 'EChat',
-            body: 'Вам пришло сообщение',
-            icon: 'assets/icon-192x192.png'
-        };
-    }
-    
-    event.waitUntil(
-        self.registration.showNotification(notificationData.title, {
-            body: notificationData.body,
-            icon: notificationData.icon
-        })
-    );
-});
-
-// On notification click
+// SW ON NOTIFICATION CLICK
 self.addEventListener('notificationclick', (event) => {
     // close the notification
     event.notification.close();

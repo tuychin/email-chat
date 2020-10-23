@@ -1,8 +1,8 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
-import {signOut} from '../../helpers/auth';
-import {db, auth} from '../../services/firebase';
+import {signOut} from '../../utils/auth';
+import {db, auth, askForPermissionNotifications} from '../../services/firebase';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -64,9 +64,27 @@ class Menu extends PureComponent {
         menuIsOpen: false,
     };
 
+    state = {
+        notificationPermission: '',
+    }
+
     componentDidMount() {
         this.checkMenuIsOpen();
         this.fetchTheme();
+        this.setState({notificationPermission: Notification.permission});
+    }
+
+    handleNotificationPermission = async () => {
+        if (Notification.permission === 'granted') {
+            alert('Выключить уведомления можно в настройках браузера.');
+        } else {
+            askForPermissionNotifications()
+                .then((permission) => {
+                    // eslint-disable-next-line no-unused-vars
+                    const notification = new Notification('Уведомления включены!');
+                    this.setState({notificationPermission: permission});
+                });
+        }
     }
 
     checkMenuIsOpen = () => {
@@ -107,6 +125,7 @@ class Menu extends PureComponent {
     }
 
     render() {
+        const {notificationPermission} = this.state;
         const {
             menuIsOpen,
             closeMenu,
@@ -148,6 +167,13 @@ class Menu extends PureComponent {
                                     ))}
                                 </select>
                             </div>
+                            <button
+                                type="button"
+                                className={`btn btn-${notificationPermission === 'granted' ? 'outline-success' : 'info'}`}
+                                onClick={this.handleNotificationPermission}
+                            >
+                                {notificationPermission === 'granted' ? 'Уведомления включены' : 'Включить уведомления'}
+                            </button>
                         </div>
 
                         <div className="modal-footer d-flex justify-content-between">
