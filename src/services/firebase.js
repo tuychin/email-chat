@@ -1,4 +1,5 @@
 import firebase from 'firebase';
+import {Workbox} from 'workbox-window';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC7Xblmorl6POclj6xzQI_-WrlCLFO7CYE',
@@ -12,9 +13,21 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// REGISTER FIREBASE SW
+// REGISTER FIREBASE SW WITH WORKBOX
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('firebase-sw.js')
+    const wb = new Workbox('firebase-sw.js');
+
+    wb.addEventListener('installed', event => {
+        if (event.isUpdate) {
+            if (confirm(`Приложение обновлено. Перезагрузить, чтобы изменения вступили в силу?`)) {
+                window.location.reload();
+            }
+        } else {
+            console.log(`[Firebase SW]: The app is offline-ready`)
+        }
+    });
+
+    wb.register()
         .then((registration) => {
             console.log('[Firebase SW]: Registration successful with scope: ', registration.scope);
             registration.update();
