@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
     entry: './src/index.js',
@@ -43,6 +44,10 @@ module.exports = {
                 {from: 'public/assets', to: 'assets'},
                 {from: 'public/manifest.json', to: 'manifest.json'},
             ],
+        }),
+        // Workbox SW will use manifest for precache
+        new WorkboxPlugin.InjectManifest({
+            swSrc: './firebase-sw.js',
         }),
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1

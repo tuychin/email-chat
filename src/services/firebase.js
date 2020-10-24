@@ -12,9 +12,9 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// REGISTER FIREBASE NOTIFICATION SW
+// REGISTER FIREBASE SW
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('firebase-messaging-sw.js')
+    navigator.serviceWorker.register('firebase-sw.js')
         .then((registration) => {
             console.log('[Firebase SW]: Registration successful with scope: ', registration.scope);
             registration.update();

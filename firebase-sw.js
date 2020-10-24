@@ -1,5 +1,22 @@
 /* eslint-disable no-undef */
 
+// WORKBOX PRECACHING
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
+
+// Turn on logging
+workbox.setConfig({
+    debug: false
+});
+
+// Updating SW lifecycle to update the app after user triggered refresh
+workbox.core.skipWaiting();
+workbox.core.clientsClaim();
+
+// Auto cache
+workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
+
+
+
 // FCM WEB PUSH NOTIFICATION
 importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-messaging.js');
@@ -17,18 +34,6 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
-
-// SW ON INSTALL
-self.addEventListener('install', async (event) => {
-    event.waitUntil(self.skipWaiting());
-});
-
-// SW ON ACTIVATE
-self.addEventListener('activate', async (event) => {
-    // Controll all app tabs
-    event.waitUntil(self.clients.claim());
-    console.log('[Firebase SW]: Service worker has been activated');
-});
 
 // FCM ON BACKGROUND NOTIFICATION
 messaging.setBackgroundMessageHandler((payload) => {
