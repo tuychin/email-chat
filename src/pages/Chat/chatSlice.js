@@ -34,10 +34,10 @@ export const chatSlice = createSlice({
         setMessages: (state, action) => {
             state.messages = action.payload;
         },
-        openMessages: (state, action) => {
+        openMessages: state => {
             state.isMessagesOpen = true;
         },
-        closeMessages: (state, action) => {
+        closeMessages: state => {
             state.isMessagesOpen = false;
         },
         setError: (state, action) => {
@@ -76,7 +76,7 @@ const checkDialogExist = (email) => (dispatch, getState) => {
     dialogs.forEach(dialog => {
         if (dialog.member.email === email) {
             isDialogAlredyExist = true;
-            dispatch(chooseDialog(dialog.dialogId, dialog.member.email));
+            dispatch(openDialog(dialog.dialogId, dialog.member.email));
             dispatch(setError('Такой диалог уже существует'));
         }
     });
@@ -192,7 +192,7 @@ export function createDialog(email) {
                         db.ref('dialogs')
                             .push(true)
                             .then((res) => {
-                                dispatch(chooseDialog(res.key, email));
+                                dispatch(openDialog(res.key, email));
                             })
                             .then(() => {
                                 dispatch(addDialogToAnotherUser(email));
@@ -240,8 +240,9 @@ export function fetchDialogs(currentUser) {
     }
 }
 
-export function chooseDialog(dialogId, memberName) {
+export function openDialog(dialogId, memberName) {
     return (dispatch) => {
+        dispatch(openMessages());
         dispatch(setCurrentDialog(dialogId));
         dispatch(setCurrentMemberEmail(memberName));
         dispatch(fetchMessages(dialogId));

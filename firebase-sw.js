@@ -49,18 +49,19 @@ messaging.setBackgroundMessageHandler((payload) => {
 
 // SW ON NOTIFICATION CLICK
 self.addEventListener('notificationclick', (event) => {
-    // close the notification
     event.notification.close();
     // see if the current is open and if it is focus it
     // otherwise open new tab
     event.waitUntil(
-        self.clients.matchAll().then((clientList) => {
-        
-            if (clientList.length > 0) {
-                return clientList[0].focus();
-            }
-            
-            return self.clients.openWindow('/');
-        })
+        self.clients.matchAll()
+            .then(async (clientList) => {
+                if (clientList.length > 0) {
+                    await clientList[0].focus();
+
+                    return clientList[0].navigate(event.notification.data.clickAction);
+                }
+                
+                return self.clients.openWindow(event.notification.data.clickAction);
+            })
     );
 });

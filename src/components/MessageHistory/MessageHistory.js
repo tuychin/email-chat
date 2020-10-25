@@ -63,13 +63,16 @@ class MessageHistory extends PureComponent {
         const currentDialog = dialogs.filter(dialog => dialog.dialogId === currentDialogId)[0];
         
         if (this.сheckNoSpacesInMessageText(content)) {
+            const currentDialogLink = location.href;
+
             await sendMessage(content);
             await sendNotificationToUser({
                 title: `Новое сообщение от: ${user.email}`,
                 body: content,
-                link: '/',
+                link: currentDialogLink,
                 token: currentDialog.member.messagingToken,
             });
+
             this.setState({content: ''});
         }
     }

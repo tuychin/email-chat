@@ -7,8 +7,7 @@ import {
     selectDialogs,
 
     createDialog,
-    chooseDialog,
-    openMessages,
+    openDialog,
 } from '../../pages/Chat/chatSlice';
 import {openMenu} from '../../components/Menu/menuSlice';
 
@@ -25,9 +24,8 @@ class Dialogs extends PureComponent {
     static propTypes = {
         dialogs: PropTypes.array,
         createDialog: PropTypes.func.isRequired,
-        chooseDialog: PropTypes.func.isRequired,
+        openDialog: PropTypes.func.isRequired,
         openMenu: PropTypes.func.isRequired,
-        openMessages: PropTypes.func.isRequired,
     }
 
     handleChangeForm = (event) => {
@@ -45,15 +43,17 @@ class Dialogs extends PureComponent {
         this.setState({email: ''});
     }
 
-    handleChooseDialog = (evt) => {
+    handleOpenDialog = (evt) => {
         evt.preventDefault();
-        const {chooseDialog, openMessages} = this.props;
+        const {openDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
         const memberName = evt.target.dataset.memberName;
 
-        chooseDialog(dialogId, memberName);
-        openMessages();
+        this.setUrlHash(dialogId);
+        openDialog(dialogId, memberName);
     }
+
+    setUrlHash = dialogId => location.hash = dialogId;
 
     renderDialogsPlaceholder = () => {
         const {dialogs} = this.props;
@@ -98,7 +98,7 @@ class Dialogs extends PureComponent {
                         {dialogs.map(dialog => (
                             <li
                                 className={`${block.elem('list-item')} list-group-item list-group-item-action`}
-                                onClick={this.handleChooseDialog}
+                                onClick={this.handleOpenDialog}
                                 data-dialog-id={dialog.dialogId}
                                 data-member-name={dialog.member.email}
                                 key={dialog.dialogId}
@@ -142,9 +142,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     createDialog,
-    chooseDialog,
+    openDialog,
     openMenu,
-    openMessages,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dialogs);

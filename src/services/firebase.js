@@ -39,6 +39,9 @@ if ('serviceWorker' in navigator) {
                 const options = {
                     body: payload.notification.body,
                     icon: payload.notification.icon,
+                    data: {
+                        clickAction: payload.notification.click_action,
+                    }
                 };
                 registration.showNotification(title, options);           
             });
@@ -61,9 +64,9 @@ export const updateMessagingToken = async () => {
                 messagingToken: token,
             });
 
-        console.log('[Firebase]: Token sent to server');
+        console.log('[Firebase messaging]: Token sent to server');
     } catch (error) {
-        console.error(`[Firebase]: ${error}`);
+        console.error(`[Firebase messaging]: ${error}`);
     }
 }
 
@@ -74,12 +77,12 @@ export const checkNotificationsPermission = async () => {
 
         updateMessagingToken();
     } catch (error) {
-        console.error(`[Firebase]: ${error}`);
+        console.error(`[Firebase messaging]: ${error}`);
     }
 }
 
 export const sendNotificationToUser = async ({title, body, link, token}) => {
-    let response = await fetch('https://fcm.googleapis.com/fcm/send', {
+    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -96,7 +99,7 @@ export const sendNotificationToUser = async ({title, body, link, token}) => {
         })
     });
 
-    console.log(`[Firebase]: Notification sent. Status - ${response.status}`);
+    console.log(`[Firebase messaging]: Notification sent. Status - ${response.status}`);
 
     return response;
 }
