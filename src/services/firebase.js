@@ -17,8 +17,8 @@ firebase.initializeApp(firebaseConfig);
 if ('serviceWorker' in navigator) {
     const wb = new Workbox('firebase-sw.js');
 
-    wb.addEventListener('installed', event => {
-        if (event.isUpdate) {
+    wb.addEventListener('installed', evt => {
+        if (evt.isUpdate) {
             if (confirm(`Приложение обновлено. Перезагрузить, чтобы изменения вступили в силу?`)) {
                 window.location.reload();
             }

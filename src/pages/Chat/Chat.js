@@ -8,7 +8,6 @@ import {bindActionCreators} from 'redux';
 import {auth} from '../../services/firebase';
 import {
     selectDialogs,
-
     openDialog,
     setCurrentUser,
     fetchDialogs,

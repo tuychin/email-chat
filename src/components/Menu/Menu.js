@@ -6,6 +6,7 @@ import {db, auth} from '../../services/firebase';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import withInstallPwaApp from '../../hocs/withInstallPwaApp';
 import {
     openMenu,
     closeMenu,
@@ -58,6 +59,8 @@ class Menu extends PureComponent {
         updateUserData: PropTypes.func.isRequired,
         theme: PropTypes.string.isRequired,
         setTheme: PropTypes.func.isRequired,
+        appIsInstalled: PropTypes.bool,
+        installApp: PropTypes.func,
     };
 
     static defaultProps = {
@@ -112,6 +115,8 @@ class Menu extends PureComponent {
             closeMenu,
             currentUser,
             theme,
+            appIsInstalled,
+            installApp,
         } = this.props;
 
         return (
@@ -148,6 +153,15 @@ class Menu extends PureComponent {
                                     ))}
                                 </select>
                             </div>
+                            {!appIsInstalled && (
+                                <button
+                                    type="button"
+                                    className="btn btn-info"
+                                    onClick={installApp}
+                                >
+                                    Установить как приложение
+                                </button>
+                            )}
                         </div>
 
                         <div className="modal-footer d-flex justify-content-between">
@@ -188,4 +202,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     setTheme,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(mapStateToProps, mapDispatchToProps)(withInstallPwaApp(Menu));

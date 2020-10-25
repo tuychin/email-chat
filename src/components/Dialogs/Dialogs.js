@@ -28,14 +28,14 @@ class Dialogs extends PureComponent {
         openMenu: PropTypes.func.isRequired,
     }
 
-    handleChangeForm = (event) => {
+    handleChangeForm = (evt) => {
         this.setState({
-            email: event.target.value
+            email: evt.target.value
         });
     }
 
     handleCreateDialog = (evt) => {
-        evt.preventDefault();
+        evt.prevtDefault();
         const {email} = this.state;
         const {createDialog} = this.props;
 
@@ -44,7 +44,7 @@ class Dialogs extends PureComponent {
     }
 
     handleOpenDialog = (evt) => {
-        evt.preventDefault();
+        evt.prevtDefault();
         const {openDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
         const memberName = evt.target.dataset.memberName;

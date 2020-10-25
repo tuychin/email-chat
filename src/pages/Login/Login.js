@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react';
+import PropTypes from 'prop-types';
 import Bevis from 'bevis';
 import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../utils/auth';
+import withInstallPwaApp from '../../hocs/withInstallPwaApp';
 
 import Confirm from '../../components/Confirm';
 
@@ -8,7 +10,12 @@ import './login.scss';
 
 const block = new Bevis('login');
 
-export default class Login extends PureComponent {
+class Login extends PureComponent {
+    static propTypes = {
+        appIsInstalled: PropTypes.bool,
+        installApp: PropTypes.func,
+    };
+
     state = {
         error: null,
         email: '',
@@ -28,16 +35,16 @@ export default class Login extends PureComponent {
         this.setState({error: null});
     }
 
-    handleChange = (event) => {
+    handleChange = (evt) => {
         this.setState({
-            [event.target.name]: event.target.value
+            [evt.target.name]: evt.target.value
         });
     }
 
-    handleSubmit = async (event) => {
+    handleSubmit = async (evt) => {
         const {email} = this.state;
 
-        event.preventDefault();
+        evt.prevtDefault();
         this.setState({error: ''});
 
         try {
@@ -72,6 +79,11 @@ export default class Login extends PureComponent {
             showConfirm,
             email,
         } = this.state;
+
+        const {
+            appIsInstalled,
+            installApp,
+        } = this.props;
 
         return (
             showConfirm ? <Confirm email={email} /> : (
@@ -114,8 +126,19 @@ export default class Login extends PureComponent {
                             </button>
                         </div>
                     </div>
+                    {!appIsInstalled && (
+                        <button
+                            type="button"
+                            className="btn btn-info m-3"
+                            onClick={installApp}
+                        >
+                            Установить как приложение
+                        </button>
+                    )}
                 </div>
             )
         );
     }
 }
+
+export default withInstallPwaApp(Login);

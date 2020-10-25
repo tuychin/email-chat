@@ -1,7 +1,7 @@
-import { auth, db } from '../services/firebase';
+import {auth, db} from '../services/firebase';
 
 export function sendConfirmEmail(email) {
-    var actionCodeSettings = {
+    const actionCodeSettings = {
         url: 'http://localhost:8080',
         handleCodeInApp: true,
     };
