@@ -44,7 +44,7 @@ class Login extends PureComponent {
     handleSubmit = async (evt) => {
         const {email} = this.state;
 
-        evt.prevtDefault();
+        evt.preventDefault();
         this.setState({error: ''});
 
         try {

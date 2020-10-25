@@ -57,7 +57,7 @@ class MessageHistory extends PureComponent {
     сheckNoSpacesInMessageText = (str) => str.trim() !== '';
 
     sendMessage = async (evt) => {
-        evt.prevtDefault();
+        evt.preventDefault();
         const {content} = this.state;
         const {user, dialogs, currentDialogId, sendMessage} = this.props;
         const currentDialog = dialogs.filter(dialog => dialog.dialogId === currentDialogId)[0];

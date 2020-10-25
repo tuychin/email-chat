@@ -35,7 +35,7 @@ class Dialogs extends PureComponent {
     }
 
     handleCreateDialog = (evt) => {
-        evt.prevtDefault();
+        evt.preventDefault();
         const {email} = this.state;
         const {createDialog} = this.props;
 
@@ -44,7 +44,7 @@ class Dialogs extends PureComponent {
     }
 
     handleOpenDialog = (evt) => {
-        evt.prevtDefault();
+        evt.preventDefault();
         const {openDialog} = this.props;
         const dialogId = evt.target.dataset.dialogId;
         const memberName = evt.target.dataset.memberName;
