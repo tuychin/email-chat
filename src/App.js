@@ -13,7 +13,7 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
 import {
-    checkUserToken,
+    checkNotificationsPermission,
     auth,
     db
 } from './services/firebase';
@@ -37,7 +37,7 @@ export default class App extends Component {
     importUserTheme = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
-                db.ref(`users/${user.uid}/settings/theme`)
+                db.ref(`users/${user.uid}/theme`)
                     .once('value', snapshot => {
                         const theme = snapshot.val();
 
@@ -53,7 +53,7 @@ export default class App extends Component {
     checkAuth = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
-                checkUserToken();
+                checkNotificationsPermission();
 
                 this.setState({
                     authenticated: true,

@@ -50,26 +50,55 @@ if ('serviceWorker' in navigator) {
     console.warn('[Firebase SW]: Service worker is not supported');
 }
 
-export const askForPermissionNotifications = async () => {
+export const updateMessagingToken = async () => {
     try {
         const messaging = firebase.messaging();
-        await messaging.requestPermission();
         const token = await messaging.getToken();
-        console.log('User token:', token);
-        
-        return token;
+        const currentUserId = firebase.auth().currentUser.uid;
+
+        await db.ref(`users/${currentUserId}`)
+            .update({
+                messagingToken: token,
+            });
+
+        console.log('[Firebase]: Token sent to server');
     } catch (error) {
-        console.error(error);
+        console.error(`[Firebase]: ${error}`);
     }
 }
 
-export const checkUserToken = async () => {
-    const messaging = firebase.messaging();
-    const token = await messaging.getToken();
+export const checkNotificationsPermission = async () => {
+    try {
+        const messaging = firebase.messaging();
+        await messaging.requestPermission();
 
-    if (token) {
-        console.log('User token:', token);
+        updateMessagingToken();
+    } catch (error) {
+        console.error(`[Firebase]: ${error}`);
     }
+}
+
+export const sendNotificationToUser = async ({title, body, link, token}) => {
+    let response = await fetch('https://fcm.googleapis.com/fcm/send', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'key=AAAAKu_ROkw:APA91bHKRo8EKZqXMF3Sb2-5n4VSU9knWFzP6TDh1hUQnoupbarGthN2qvEdN1l7n-C6PzaZT1ViMwRZiafUu-zeOqUw-3pRNbetPVtHUWY9I1zhHuUqN72oSwqwSBCCMgTmx4a4OgBJ',
+        },
+        body: JSON.stringify({
+            notification: {
+                title,
+                body,
+                click_action: link,
+                icon: '/assets/icon-512x512.png',
+            },
+            to: token,
+        })
+    });
+
+    console.log(`[Firebase]: Notification sent. Status - ${response.status}`);
+
+    return response;
 }
 
 export const auth = firebase.auth;

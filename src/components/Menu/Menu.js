@@ -2,7 +2,7 @@ import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
 import {signOut} from '../../utils/auth';
-import {db, auth, askForPermissionNotifications} from '../../services/firebase';
+import {db, auth} from '../../services/firebase';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
@@ -15,7 +15,7 @@ import {
 } from '../../components/Menu/menuSlice';
 import {
     selectCurrentUser,
-    updateUserSettings,
+    updateUserData,
 } from '../../pages/Chat/chatSlice';
 
 import Bevis from 'bevis';
@@ -55,7 +55,7 @@ class Menu extends PureComponent {
         openMenu: PropTypes.func.isRequired,
         closeMenu: PropTypes.func.isRequired,
         currentUser: PropTypes.object.isRequired,
-        updateUserSettings: PropTypes.func.isRequired,
+        updateUserData: PropTypes.func.isRequired,
         theme: PropTypes.string.isRequired,
         setTheme: PropTypes.func.isRequired,
     };
@@ -64,27 +64,9 @@ class Menu extends PureComponent {
         menuIsOpen: false,
     };
 
-    state = {
-        notificationPermission: '',
-    }
-
     componentDidMount() {
         this.checkMenuIsOpen();
         this.fetchTheme();
-        this.setState({notificationPermission: Notification.permission});
-    }
-
-    handleNotificationPermission = async () => {
-        if (Notification.permission === 'granted') {
-            alert('Выключить уведомления можно в настройках браузера.');
-        } else {
-            askForPermissionNotifications()
-                .then((permission) => {
-                    // eslint-disable-next-line no-unused-vars
-                    const notification = new Notification('Уведомления включены!');
-                    this.setState({notificationPermission: permission});
-                });
-        }
     }
 
     checkMenuIsOpen = () => {
@@ -100,7 +82,7 @@ class Menu extends PureComponent {
     fetchTheme = () => {
         const {setTheme} = this.props;
 
-        db.ref(`users/${auth().currentUser.uid}/settings/theme`)
+        db.ref(`users/${auth().currentUser.uid}/theme`)
             .on('value', snapshot => {
                 const theme = snapshot.val();
 
@@ -109,10 +91,10 @@ class Menu extends PureComponent {
     }
 
     handleChooseTheme = (evt) => {
-        const {updateUserSettings} = this.props;
+        const {updateUserData} = this.props;
         const chosenTheme = evt.target.value;
 
-        updateUserSettings('theme', chosenTheme);
+        updateUserData('theme', chosenTheme);
         localStorage.setItem('menuIsOpen', true);
         window.location.reload();
     }
@@ -125,7 +107,6 @@ class Menu extends PureComponent {
     }
 
     render() {
-        const {notificationPermission} = this.state;
         const {
             menuIsOpen,
             closeMenu,
@@ -167,13 +148,6 @@ class Menu extends PureComponent {
                                     ))}
                                 </select>
                             </div>
-                            <button
-                                type="button"
-                                className={`btn btn-${notificationPermission === 'granted' ? 'outline-success' : 'info'}`}
-                                onClick={this.handleNotificationPermission}
-                            >
-                                {notificationPermission === 'granted' ? 'Уведомления включены' : 'Включить уведомления'}
-                            </button>
                         </div>
 
                         <div className="modal-footer d-flex justify-content-between">
@@ -210,7 +184,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     openMenu,
     closeMenu,
-    updateUserSettings,
+    updateUserData,
     setTheme,
 }, dispatch);
 

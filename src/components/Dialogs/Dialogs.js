@@ -100,11 +100,11 @@ class Dialogs extends PureComponent {
                                 className={`${block.elem('list-item')} list-group-item list-group-item-action`}
                                 onClick={this.handleChooseDialog}
                                 data-dialog-id={dialog.dialogId}
-                                data-member-name={dialog.member}
+                                data-member-name={dialog.member.email}
                                 key={dialog.dialogId}
                                 href="#"
                             >
-                                {dialog.member}
+                                {dialog.member.email}
                             </li>
                         ))}
                     </ul>

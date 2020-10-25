@@ -8,8 +8,8 @@ export const chatSlice = createSlice({
     name: 'chat',
     initialState: {
         currentUser: {},
-        currentMember: '',
-        currentDialog: '',
+        currentMemberEmail: '',
+        currentDialogId: '',
         dialogs: null,
         messages: null,
         isMessagesOpen: false,
@@ -20,12 +20,13 @@ export const chatSlice = createSlice({
             state.currentUser.uid = action.payload.uid;
             state.currentUser.email = action.payload.email;
             state.currentUser.displayName = action.payload.displayName;
+            state.currentUser.messagingToken = action.payload.messagingToken;
         },
-        setCurrentMember: (state, action) => {
-            state.currentMember = action.payload;
+        setCurrentMemberEmail: (state, action) => {
+            state.currentMemberEmail = action.payload;
         },
         setCurrentDialog: (state, action) => {
-            state.currentDialog = action.payload;
+            state.currentDialogId = action.payload;
         },
         setDialogs: (state, action) => {
             state.dialogs = action.payload;
@@ -55,7 +56,7 @@ export const chatSlice = createSlice({
 // Actions
 export const {
     setCurrentUser,
-    setCurrentMember,
+    setCurrentMemberEmail,
     setCurrentDialog,
     setDialogs,
     setMessages,
@@ -73,9 +74,9 @@ const checkDialogExist = (email) => (dispatch, getState) => {
     let isDialogAlredyExist = false;
 
     dialogs.forEach(dialog => {
-        if (dialog.member === email) {
+        if (dialog.member.email === email) {
             isDialogAlredyExist = true;
-            dispatch(chooseDialog(dialog.dialogId, dialog.member));
+            dispatch(chooseDialog(dialog.dialogId, dialog.member.email));
             dispatch(setError('Такой диалог уже существует'));
         }
     });
@@ -84,39 +85,32 @@ const checkDialogExist = (email) => (dispatch, getState) => {
 }
 
 const addDialogToCurrentUser = (anotherUserEmail) => async (dispatch, getState) => {
-    const {currentUser, currentDialog} = getState().chat;
+    const {currentUser, currentDialogId} = getState().chat;
 
     try {
-        await db.ref(`users/${currentUser.uid}/dialogs`)
-            .child(currentDialog)
-            .set({
-                dialogId: currentDialog,
-                member: anotherUserEmail,
-            });
-    } catch (error) {
-        console.error(error);
-        dispatch(setError(error.message));
-    }
-}
-
-const addDialogToAnotherUser = (email) => async (dispatch, getState) => {
-    const {currentUser, currentDialog} = getState().chat;
-
-    try {
-        /**get user id by email */
+        // Get user id by email
         await db.ref('users')
             .orderByChild('email')
-            .equalTo(email)
+            .equalTo(anotherUserEmail)
             .on('child_added',  snapshot => {
-                const userId = snapshot.key;
-                
-                if (!userId) throw new Error('Id is undefined');
-    
-                db.ref(`users/${userId}/dialogs`)
-                    .child(currentDialog)
-                    .set({
-                        dialogId: currentDialog,
-                        member: currentUser.email,
+                const anotherUserId = snapshot.key;
+
+                // Get user messaging token
+                db.ref(`users/${anotherUserId}/messagingToken`)
+                    .on('value', snapshot => {
+                        const anotherUserMessagingToken = snapshot.val();
+
+                        // Set member data
+                        db.ref(`users/${currentUser.uid}/dialogs`)
+                            .child(currentDialogId)
+                            .set({
+                                dialogId: currentDialogId,
+                                member: {
+                                    id: anotherUserId,
+                                    email: anotherUserEmail,
+                                    messagingToken: anotherUserMessagingToken,
+                                },
+                            });
                     });
             });
     } catch (error) {
@@ -125,12 +119,47 @@ const addDialogToAnotherUser = (email) => async (dispatch, getState) => {
     }
 }
 
-export function updateUserSettings(key, value) {
+const addDialogToAnotherUser = (email) => async (dispatch, getState) => {
+    const {currentUser, currentDialogId} = getState().chat;
+
+    try {
+        // Get user id by email
+        await db.ref('users')
+            .orderByChild('email')
+            .equalTo(email)
+            .on('child_added',  snapshot => {
+                const anotherUserId = snapshot.key;
+
+                // Get user messaging token
+                db.ref(`users/${currentUser.uid}/messagingToken`)
+                    .on('value', snapshot => {
+                        const currentUserMessagingToken = snapshot.val();
+
+                        // Set member data
+                        db.ref(`users/${anotherUserId}/dialogs`)
+                            .child(currentDialogId)
+                            .set({
+                                dialogId: currentDialogId,
+                                member: {
+                                    id: currentUser.uid,
+                                    email: currentUser.email,
+                                    messagingToken: currentUserMessagingToken,
+                                },
+                            });
+                    });
+            });
+    } catch (error) {
+        console.error(error);
+        dispatch(setError(error.message));
+    }
+}
+
+export function updateUserData(key, value) {
     return async (dispatch, getState) => {
         const {currentUser} = getState().chat;
 
         try {
-            await db.ref(`users/${currentUser.uid}/settings`)
+            await db.ref(`users/${currentUser.uid}`)
                 .update({
                     [key]: value,
                 });
@@ -214,19 +243,19 @@ export function fetchDialogs(currentUser) {
 export function chooseDialog(dialogId, memberName) {
     return (dispatch) => {
         dispatch(setCurrentDialog(dialogId));
-        dispatch(setCurrentMember(memberName));
+        dispatch(setCurrentMemberEmail(memberName));
         dispatch(fetchMessages(dialogId));
     }
 }
 
 export function sendMessage(content) {
     return async (dispatch, getState) => {
-        const {currentUser, currentDialog} = getState().chat;
+        const {currentUser, currentDialogId} = getState().chat;
 
         dispatch(clearError());
 
         try {
-            await db.ref(`dialogs/${currentDialog}`)
+            await db.ref(`dialogs/${currentDialogId}`)
                 .push(true)
                 .then((res) => {
                     res.set({
@@ -247,13 +276,13 @@ export function sendMessage(content) {
 
 export function fetchMessages(dialogId) {
     return (dispatch, getState) => {
-        const {currentDialog} = getState().chat;
+        const {currentDialogId} = getState().chat;
 
-        if (dialogId || currentDialog) {
+        if (dialogId || currentDialogId) {
             dispatch(clearError());
 
             try {
-                db.ref(`dialogs/${dialogId || currentDialog}`)
+                db.ref(`dialogs/${dialogId || currentDialogId}`)
                     .on('value', snapshot => {
                         let messages = [];
         
@@ -273,8 +302,8 @@ export function fetchMessages(dialogId) {
 
 // Selectors
 export const selectCurrentUser = state => state.chat.currentUser;
-export const selectCurrentMember = state => state.chat.currentMember;
-export const selectCurrentDialog = state => state.chat.currentDialog;
+export const selectCurrentMemberEmail = state => state.chat.currentMemberEmail;
+export const selectCurrentDialog = state => state.chat.currentDialogId;
 export const selectDialogs = state => state.chat.dialogs;
 export const selectMessages = state => state.chat.messages;
 export const isMessagesOpen = state => state.chat.isMessagesOpen;
