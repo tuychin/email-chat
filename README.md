@@ -1,7 +1,6 @@
 # Email-chat PWA app
 
-## DEMO
-[email-chat.tuychin.ru](https://email-chat.tuychin.ru)
+**DEMO:** [email-chat.tuychin.ru](https://email-chat.tuychin.ru)
 
 ## PWA features
 - Add to home screen
