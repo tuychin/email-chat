@@ -1,19 +1,20 @@
-<h1>Email-chat PWA app</h1>
+# Email-chat PWA app
+
+## DEMO
+[email-chat.tuychin.ru](https://email-chat.tuychin.ru)
 
 ## PWA features
 - Add to home screen
 - Web push notifications
 - Precache
 
-## Using:
+## Technologies
 - HTML, SCSS, bootswatch, JS
 - React, Redux-toolkit, Router
 - Webpack, Babel
 - Firebase
 
-Link: [email-chat.tuychin.ru](https://email-chat.tuychin.ru)
-
-<h2>Available Scripts</h2>
+## Available Scripts
 
 ### `npm run dev`
 
