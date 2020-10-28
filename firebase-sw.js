@@ -44,7 +44,6 @@ messaging.setBackgroundMessageHandler((payload) => {
     };
 
     self.registration.showNotification(title,  options);
-    self.registration.hideNotification();
 });
 
 // SW ON NOTIFICATION CLICK
