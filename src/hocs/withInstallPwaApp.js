@@ -16,7 +16,7 @@ export default function withInstallPwaApp(WrappedComponent) {
                 // Update UI notify the user they can install the PWA
                 setAppIsInstalled(false);
             });
-        }, []);
+        });
 
         const installApp = () => {
             // Hide the app provided install promotion
