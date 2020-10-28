@@ -7,8 +7,6 @@ import {
 import {Provider} from 'react-redux';
 import store from './store';
 
-import PrivateRoute from './hocs/withPrivateRoute';
-import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
@@ -80,8 +78,10 @@ export default class App extends Component {
                 <Provider store={store}>
                     <Router>
                         <Switch>
-                            <PublicRoute exact path="/" authenticated={authenticated} component={Login}></PublicRoute>
-                            <PrivateRoute path="/chat" authenticated={authenticated} component={Chat}></PrivateRoute>
+                            <Route exact path="/" render={() => authenticated ?
+                                <Chat /> :
+                                <Login />
+                            } />
                             <Route render={() => (
                                 <div className="text-center vh-100 d-flex justify-content-center align-items-center">
                                     <h2>Ошибка 404<br/>Страница не найдена</h2>

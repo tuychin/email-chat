@@ -15,17 +15,6 @@ workbox.core.clientsClaim();
 // Auto cache
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
-// Route cache
-const {NavigationRoute, registerRoute} = workbox.routing;
-const handler = createHandlerBoundToURL('/index.html');
-const navigationRoute = new NavigationRoute(handler, {
-    allowlist: [
-        new RegExp('/chat'),
-    ],
-    denylist: [],
-});
-registerRoute(navigationRoute);
-
 
 
 // FCM WEB PUSH NOTIFICATION
