@@ -7,10 +7,12 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {auth} from '../../services/firebase';
 import {
+    selectDialogs,
+    openDialog,
     setCurrentUser,
     fetchDialogs,
     showErrorMessage,
-    isMessagesOpen,
+    selectIsMessagesOpen,
     selectError,
 } from './chatSlice';
 
@@ -24,6 +26,8 @@ const block = new Bevis('chat');
 
 class Chat extends PureComponent {
     static propTypes = {
+        dialogs: PropTypes.array,
+        openDialog: PropTypes.func,
         setCurrentUser: PropTypes.func,
         fetchDialogs: PropTypes.func,
         showErrorMessage: PropTypes.func,
@@ -39,9 +43,33 @@ class Chat extends PureComponent {
     }
 
     componentDidUpdate() {
-        const {showErrorMessage, error} = this.props;
+        const {
+            showErrorMessage,
+            error,
+        } = this.props;
 
-        if (error) showErrorMessage(error);
+        this.openDialogOnUrlCheck();
+
+        if (error) {
+            showErrorMessage(error);
+        }
+    }
+
+    openDialogOnUrlCheck = () => {
+        const {
+            dialogs,
+            openDialog,
+        } = this.props;
+
+        const urlHash = location.hash.replace(/#/, '');
+
+        dialogs.forEach(dialog => {
+            const isCurentDialog = urlHash === dialog.dialogId;
+
+            if (isCurentDialog) {
+                openDialog(dialog.dialogId, dialog.member.email);
+            }
+        });
     }
 
     renderDesktopVersion = () => (
@@ -92,11 +120,13 @@ class Chat extends PureComponent {
 }
 
 const mapStateToProps = (state) => ({
-    isMessagesOpen: isMessagesOpen(state),
+    dialogs: selectDialogs(state),
+    isMessagesOpen: selectIsMessagesOpen(state),
     error: selectError(state),
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
+    openDialog,
     setCurrentUser,
     fetchDialogs,
     showErrorMessage,

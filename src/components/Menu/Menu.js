@@ -1,11 +1,12 @@
 import React, {PureComponent} from 'react';
 import PropTypes from 'prop-types';
 import {Link} from 'react-router-dom';
-import {signOut} from '../../helpers/auth';
+import {signOut} from '../../utils/auth';
 import {db, auth} from '../../services/firebase';
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import withInstallPwaApp from '../../hocs/withInstallPwaApp';
 import {
     openMenu,
     closeMenu,
@@ -15,7 +16,7 @@ import {
 } from '../../components/Menu/menuSlice';
 import {
     selectCurrentUser,
-    updateUserSettings,
+    updateUserData,
 } from '../../pages/Chat/chatSlice';
 
 import Bevis from 'bevis';
@@ -55,9 +56,11 @@ class Menu extends PureComponent {
         openMenu: PropTypes.func.isRequired,
         closeMenu: PropTypes.func.isRequired,
         currentUser: PropTypes.object.isRequired,
-        updateUserSettings: PropTypes.func.isRequired,
+        updateUserData: PropTypes.func.isRequired,
         theme: PropTypes.string.isRequired,
         setTheme: PropTypes.func.isRequired,
+        appIsInstalled: PropTypes.bool,
+        installApp: PropTypes.func,
     };
 
     static defaultProps = {
@@ -82,7 +85,7 @@ class Menu extends PureComponent {
     fetchTheme = () => {
         const {setTheme} = this.props;
 
-        db.ref(`users/${auth().currentUser.uid}/settings/theme`)
+        db.ref(`users/${auth().currentUser.uid}/theme`)
             .on('value', snapshot => {
                 const theme = snapshot.val();
 
@@ -91,10 +94,10 @@ class Menu extends PureComponent {
     }
 
     handleChooseTheme = (evt) => {
-        const {updateUserSettings} = this.props;
+        const {updateUserData} = this.props;
         const chosenTheme = evt.target.value;
 
-        updateUserSettings('theme', chosenTheme);
+        updateUserData('theme', chosenTheme);
         localStorage.setItem('menuIsOpen', true);
         window.location.reload();
     }
@@ -112,6 +115,8 @@ class Menu extends PureComponent {
             closeMenu,
             currentUser,
             theme,
+            appIsInstalled,
+            installApp,
         } = this.props;
 
         return (
@@ -148,6 +153,15 @@ class Menu extends PureComponent {
                                     ))}
                                 </select>
                             </div>
+                            {!appIsInstalled && (
+                                <button
+                                    type="button"
+                                    className="btn btn-info"
+                                    onClick={installApp}
+                                >
+                                    Установить как приложение
+                                </button>
+                            )}
                         </div>
 
                         <div className="modal-footer d-flex justify-content-between">
@@ -184,8 +198,8 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
     openMenu,
     closeMenu,
-    updateUserSettings,
+    updateUserData,
     setTheme,
 }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Menu);
+export default connect(mapStateToProps, mapDispatchToProps)(withInstallPwaApp(Menu));

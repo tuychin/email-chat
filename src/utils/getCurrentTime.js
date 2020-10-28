@@ -1,4 +1,4 @@
-export default function getTimeNow () {
+export default function getTimeNow() {
     const dateTime = new Date();
     const year = dateTime.getFullYear();
     const month = dateTime.getMonth();

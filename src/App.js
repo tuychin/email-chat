@@ -12,8 +12,12 @@ import PublicRoute from './hocs/withPublicRoute';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
-import {auth, db} from './services/firebase';
-import {checkConfirmEmail} from './helpers/auth';
+import {
+    checkNotificationsPermission,
+    auth,
+    db
+} from './services/firebase';
+import {checkConfirmEmail} from './utils/auth';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.scss';
@@ -26,14 +30,14 @@ export default class App extends Component {
 
     async componentDidMount() {
         await checkConfirmEmail();
-        this.importUserTheme();
-        this.checkAuth();
+        await this.checkAuth();
+        await this.importUserTheme();
     }
 
     importUserTheme = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
-                db.ref(`users/${user.uid}/settings/theme`)
+                db.ref(`users/${user.uid}/theme`)
                     .once('value', snapshot => {
                         const theme = snapshot.val();
 
@@ -49,6 +53,8 @@ export default class App extends Component {
     checkAuth = () => {
         auth().onAuthStateChanged((user) => {
             if (user) {
+                checkNotificationsPermission();
+
                 this.setState({
                     authenticated: true,
                     loading: false,

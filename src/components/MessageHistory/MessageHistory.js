@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {
     selectCurrentUser,
-    selectCurrentMember,
+    selectCurrentMemberEmail,
     selectCurrentDialog,
     selectDialogs,
     selectMessages,
@@ -15,6 +15,8 @@ import {
     sendMessage,
     closeMessages,
 } from '../../pages/Chat/chatSlice';
+
+import {sendNotificationToUser} from '../../services/firebase';
 
 import './message-history.scss';
 import Loader from '../Loader';
@@ -27,11 +29,11 @@ class MessageHistory extends PureComponent {
     }
 
     static propTypes = {
-        currentDialog: PropTypes.string,
+        currentDialogId: PropTypes.string,
         dialogs: PropTypes.array,
         messages: PropTypes.array,
         user: PropTypes.object.isRequired,
-        member: PropTypes.string.isRequired,
+        memberEmail: PropTypes.string.isRequired,
         sendMessage: PropTypes.func.isRequired,
         closeMessages: PropTypes.func.isRequired,
     }
@@ -52,23 +54,40 @@ class MessageHistory extends PureComponent {
         }
     }
 
-    сheckNoLetters = (str) => str.trim() === '';
+    сheckNoSpacesInMessageText = (str) => str.trim() !== '';
 
-    sendMessage = async (event) => {
-        event.preventDefault();
+    sendMessage = async (evt) => {
+        evt.preventDefault();
         const {content} = this.state;
-        const {sendMessage} = this.props;
+        const {user, dialogs, currentDialogId, sendMessage} = this.props;
+        const currentDialog = dialogs.filter(dialog => dialog.dialogId === currentDialogId)[0];
+        
+        if (this.сheckNoSpacesInMessageText(content)) {
+            const currentDialogLink = location.href;
 
-        if (this.сheckNoLetters(content)) return;
+            await sendMessage(content);
+            await sendNotificationToUser({
+                title: `Новое сообщение от: ${user.email}`,
+                body: content,
+                link: currentDialogLink,
+                token: currentDialog.member.messagingToken,
+            });
 
-        await sendMessage(content);
-        this.setState({content: ''});
+            this.setState({content: ''});
+        }
     }
 
-    handleChange = (event) => {
+    handleChange = (evt) => {
         this.setState({
-            content: event.target.value
+            content: evt.target.value
         });
+    }
+
+    handleCloseMessages = () => {
+        const {closeMessages} = this.props;
+
+        location.hash = '';
+        closeMessages();
     }
 
     renderMessage = (message) => {
@@ -134,16 +153,15 @@ class MessageHistory extends PureComponent {
         const {content} = this.state;
 
         const {
-            member,
+            memberEmail,
             dialogs,
-            currentDialog,
+            currentDialogId,
             messages,
-            closeMessages,
         } = this.props;
 
         return (
             <div className={`${block.name()}`}>
-                {!currentDialog ? (
+                {!currentDialogId ? (
                     <div className="vh-100 d-flex justify-content-center align-items-center p-2">
                         {(dialogs && dialogs.length) ? (
                             <h2 className="text-center">Выберите, кому хотели бы написать</h2>
@@ -156,13 +174,13 @@ class MessageHistory extends PureComponent {
                                 <button
                                     type="button"
                                     className="btn btn-secondary"
-                                    onClick={closeMessages}
+                                    onClick={this.handleCloseMessages}
                                 >
                                     ←
                                 </button>
                             </MediaQuery>
                             <div className={block.elem('member')}>
-                                {member}
+                                {memberEmail}
                             </div>
                         </div>
 
@@ -202,9 +220,9 @@ class MessageHistory extends PureComponent {
 
 const mapStateToProps = (state) => ({
     user: selectCurrentUser(state),
-    member: selectCurrentMember(state),
+    memberEmail: selectCurrentMemberEmail(state),
     dialogs: selectDialogs(state),
-    currentDialog: selectCurrentDialog(state),
+    currentDialogId: selectCurrentDialog(state),
     messages: selectMessages(state),
 });
 
