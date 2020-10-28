@@ -2,9 +2,10 @@
 import React, {useState, useEffect} from 'react';
 
 export default function withInstallPwaApp(WrappedComponent) {
+    let deferredPrompt;
+
     return (props) => {
         const [appIsInstalled, setAppIsInstalled] = useState(true);
-        let deferredPrompt;
 
         useEffect(() => {
             window.addEventListener('beforeinstallprompt', (evt) => {
