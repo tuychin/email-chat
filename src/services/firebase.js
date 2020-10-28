@@ -17,16 +17,6 @@ firebase.initializeApp(firebaseConfig);
 if ('serviceWorker' in navigator) {
     const wb = new Workbox('firebase-sw.js');
 
-    wb.addEventListener('installed', evt => {
-        if (evt.isUpdate) {
-            if (confirm(`Приложение обновлено. Перезагрузить, чтобы изменения вступили в силу?`)) {
-                window.location.reload();
-            }
-        } else {
-            console.log(`[Firebase SW]: The app is offline-ready`)
-        }
-    });
-
     wb.register()
         .then((registration) => {
             console.log('[Firebase SW]: Registration successful with scope: ', registration.scope);
