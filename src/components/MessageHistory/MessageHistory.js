@@ -83,6 +83,13 @@ class MessageHistory extends PureComponent {
         });
     }
 
+    handleCloseMessages = () => {
+        const {closeMessages} = this.props;
+
+        location.hash = '';
+        closeMessages();
+    }
+
     renderMessage = (message) => {
         const {user} = this.props;
 
@@ -150,7 +157,6 @@ class MessageHistory extends PureComponent {
             dialogs,
             currentDialogId,
             messages,
-            closeMessages,
         } = this.props;
 
         return (
@@ -168,7 +174,7 @@ class MessageHistory extends PureComponent {
                                 <button
                                     type="button"
                                     className="btn btn-secondary"
-                                    onClick={closeMessages}
+                                    onClick={this.handleCloseMessages}
                                 >
                                     ←
                                 </button>

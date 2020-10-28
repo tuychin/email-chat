@@ -12,7 +12,7 @@ import {
     setCurrentUser,
     fetchDialogs,
     showErrorMessage,
-    isMessagesOpen,
+    selectIsMessagesOpen,
     selectError,
 } from './chatSlice';
 
@@ -121,7 +121,7 @@ class Chat extends PureComponent {
 
 const mapStateToProps = (state) => ({
     dialogs: selectDialogs(state),
-    isMessagesOpen: isMessagesOpen(state),
+    isMessagesOpen: selectIsMessagesOpen(state),
     error: selectError(state),
 });
 

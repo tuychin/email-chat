@@ -307,7 +307,7 @@ export const selectCurrentMemberEmail = state => state.chat.currentMemberEmail;
 export const selectCurrentDialog = state => state.chat.currentDialogId;
 export const selectDialogs = state => state.chat.dialogs;
 export const selectMessages = state => state.chat.messages;
-export const isMessagesOpen = state => state.chat.isMessagesOpen;
+export const selectIsMessagesOpen = state => state.chat.isMessagesOpen;
 export const selectError = state => state.chat.error;
 
 export default chatSlice.reducer;
