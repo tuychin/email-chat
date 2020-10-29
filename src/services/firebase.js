@@ -72,7 +72,7 @@ export const checkNotificationsPermission = async () => {
 }
 
 export const sendNotificationToUser = async ({title, body, link, token}) => {
-    const response = await fetch('http://194.67.113.112:3000/firebase/notification', {
+    const response = await fetch('https://194.67.113.112:3000/firebase/notification', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
