@@ -36,7 +36,7 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // FCM ON BACKGROUND NOTIFICATION
-messaging.onBackgroundMessage((payload) => {
+messaging.setBackgroundMessageHandler((payload) => {
     const title = payload.notification.title;
     const options = {
         body: payload.notification.body,
