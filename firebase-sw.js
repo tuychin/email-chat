@@ -18,8 +18,8 @@ workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
 
 // FCM WEB PUSH NOTIFICATION
-importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/7.15.0/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.0.0/firebase-messaging.js');
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC7Xblmorl6POclj6xzQI_-WrlCLFO7CYE',
@@ -36,7 +36,7 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // FCM ON BACKGROUND NOTIFICATION
-messaging.setBackgroundMessageHandler((payload) => {
+messaging.onBackgroundMessage((payload) => {
     const title = payload.notification.title;
     const options = {
         body: payload.notification.body,
@@ -44,6 +44,7 @@ messaging.setBackgroundMessageHandler((payload) => {
     };
 
     self.registration.showNotification(title,  options);
+    self.registration.hideNotification();
 });
 
 // SW ON NOTIFICATION CLICK

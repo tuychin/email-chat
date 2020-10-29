@@ -19,7 +19,7 @@ if ('serviceWorker' in navigator) {
 
     wb.register()
         .then((registration) => {
-            console.log('[Firebase SW]: Registration successful with scope: ', registration.scope);
+            console.log('[Firebase SW] Registration successful with scope: ', registration.scope);
             registration.update();
 
             firebase.messaging().useServiceWorker(registration);
@@ -37,10 +37,10 @@ if ('serviceWorker' in navigator) {
             });
         })
         .catch((err) => {
-            console.error('[Firebase SW]: Registration failed: ', err);
+            console.error('[Firebase SW] Registration failed: ', err);
         });
 } else {
-    console.warn('[Firebase SW]: Service worker is not supported');
+    console.warn('[Firebase SW] Service worker is not supported');
 }
 
 export const updateMessagingToken = async () => {
@@ -54,9 +54,9 @@ export const updateMessagingToken = async () => {
                 messagingToken: token,
             });
 
-        console.log('[Firebase messaging]: Token sent to server');
+        console.log(`[Firebase messaging] Token sent to server: ${token}`);
     } catch (error) {
-        console.error(`[Firebase messaging]: ${error}`);
+        console.error(`[Firebase messaging] ${error}`);
     }
 }
 
@@ -67,29 +67,28 @@ export const checkNotificationsPermission = async () => {
 
         updateMessagingToken();
     } catch (error) {
-        console.error(`[Firebase messaging]: ${error}`);
+        console.error(`[Firebase messaging] ${error}`);
     }
 }
 
 export const sendNotificationToUser = async ({title, body, link, token}) => {
-    const response = await fetch('https://fcm.googleapis.com/fcm/send', {
+    const response = await fetch('http://194.67.113.112:3000/firebase/notification', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'key=AAAAKu_ROkw:APA91bHKRo8EKZqXMF3Sb2-5n4VSU9knWFzP6TDh1hUQnoupbarGthN2qvEdN1l7n-C6PzaZT1ViMwRZiafUu-zeOqUw-3pRNbetPVtHUWY9I1zhHuUqN72oSwqwSBCCMgTmx4a4OgBJ',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
-            notification: {
-                title,
-                body,
-                click_action: link,
-                icon: '/assets/icon-512x512.png',
+            message: {
+                notification: {
+                    title,
+                    body,
+                    click_action: link,
+                    icon: '/assets/icon-512x512.png',
+                },
             },
-            to: token,
+            registrationToken: token,
         })
     });
 
-    console.log(`[Firebase messaging]: Notification sent. Status - ${response.status}`);
+    console.log(`[Firebase messaging] Notification sent. Status - ${response.status}`);
 
     return response;
 }
