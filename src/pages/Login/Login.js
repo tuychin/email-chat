@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
 import Bevis from 'bevis';
 import { sendConfirmEmail, signInWithGoogle, signInWithGitHub } from '../../utils/auth';
-import withInstallPwaApp from '../../hocs/withInstallPwaApp';
 
 import Confirm from '../../components/Confirm';
 
@@ -11,11 +9,6 @@ import './login.scss';
 const block = new Bevis('login');
 
 class Login extends PureComponent {
-    static propTypes = {
-        appIsInstalled: PropTypes.bool,
-        installApp: PropTypes.func,
-    };
-
     state = {
         error: null,
         email: '',
@@ -80,11 +73,6 @@ class Login extends PureComponent {
             email,
         } = this.state;
 
-        const {
-            appIsInstalled,
-            installApp,
-        } = this.props;
-
         return (
             showConfirm ? <Confirm email={email} /> : (
                 <div className={block.name()}>
@@ -126,19 +114,10 @@ class Login extends PureComponent {
                             </button>
                         </div>
                     </div>
-                    {!appIsInstalled && (
-                        <button
-                            type="button"
-                            className="btn btn-info m-3"
-                            onClick={installApp}
-                        >
-                            Установить как приложение
-                        </button>
-                    )}
                 </div>
             )
         );
     }
 }
 
-export default withInstallPwaApp(Login);
+export default Login;
