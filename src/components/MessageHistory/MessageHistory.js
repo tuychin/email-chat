@@ -176,7 +176,21 @@ class MessageHistory extends PureComponent {
                                     className="btn btn-secondary"
                                     onClick={this.handleCloseMessages}
                                 >
-                                    ←
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="14px"
+                                        height="100%"
+                                        viewBox="0 0 50 80"
+                                    >
+                                        <polyline
+                                            fill="none"
+                                            stroke="currentColor"
+                                            strokeWidth="8"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            points="45.63,75.8 0.375,38.087 45.63,0.375"
+                                        />
+                                    </svg>
                                 </button>
                             </MediaQuery>
                             <div className={block.elem('member')}>
