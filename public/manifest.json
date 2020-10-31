@@ -55,10 +55,10 @@
     ],
     "shortcuts": [
         {
-          "name": "Выбрать тему",
-          "url": "/#settings",
+          "name": "Главная страница",
+          "url": "/",
           "icons": [
-            { "src": "assets/theme-icon.png", "sizes": "192x192", "type": "image/png" }
+            { "src": "assets/icon-192x192.png", "sizes": "192x192", "type": "image/png" }
           ]
         }
     ],
