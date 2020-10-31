@@ -41,6 +41,9 @@ messaging.setBackgroundMessageHandler((payload) => {
     const options = {
         body: payload.notification.body,
         icon: payload.notification.icon,
+        data: {
+            clickAction: payload.notification.click_action,
+        }
     };
 
     self.registration.showNotification(title,  options);

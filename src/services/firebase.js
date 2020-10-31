@@ -21,8 +21,8 @@ if ('serviceWorker' in navigator) {
         .then((registration) => {
             console.log('[Firebase SW] Registration successful with scope: ', registration.scope);
             registration.update();
-
             firebase.messaging().useServiceWorker(registration);
+
             // SHOW NOTIFICATION ON MESSAGE
             firebase.messaging().onMessage((payload) => {
                 const title = payload.notification.title;
@@ -71,8 +71,8 @@ export const checkNotificationsPermission = async () => {
     }
 }
 
-export const sendNotificationToUser = async ({title, body, link, token}) => {
-    const response = await fetch('https://194.67.113.112:3000/firebase/notification', {
+export const sendNotificationToUser = async ({title, body, link, userId}) => {
+    const response = await fetch('http://194.67.113.112/firebase/notification', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -84,7 +84,7 @@ export const sendNotificationToUser = async ({title, body, link, token}) => {
                     icon: '/assets/icon-512x512.png',
                 },
             },
-            registrationToken: token,
+            userId,
         })
     });
 

@@ -60,7 +60,7 @@ class MessageHistory extends PureComponent {
         evt.preventDefault();
         const {content} = this.state;
         const {user, dialogs, currentDialogId, sendMessage} = this.props;
-        const currentDialog = dialogs.filter(dialog => dialog.dialogId === currentDialogId)[0];
+        const currentDialog = dialogs.find(dialog => dialog.dialogId === currentDialogId);
         
         if (this.сheckNoSpacesInMessageText(content)) {
             const currentDialogLink = location.href;
@@ -70,7 +70,7 @@ class MessageHistory extends PureComponent {
                 title: `Новое сообщение от: ${user.email}`,
                 body: content,
                 link: currentDialogLink,
-                token: currentDialog.member.messagingToken,
+                userId: currentDialog.member.id,
             });
 
             this.setState({content: ''});

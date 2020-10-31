@@ -95,22 +95,15 @@ const addDialogToCurrentUser = (anotherUserEmail) => async (dispatch, getState) 
             .on('child_added',  snapshot => {
                 const anotherUserId = snapshot.key;
 
-                // Get user messaging token
-                db.ref(`users/${anotherUserId}/messagingToken`)
-                    .on('value', snapshot => {
-                        const anotherUserMessagingToken = snapshot.val();
-
-                        // Set member data
-                        db.ref(`users/${currentUser.uid}/dialogs`)
-                            .child(currentDialogId)
-                            .set({
-                                dialogId: currentDialogId,
-                                member: {
-                                    id: anotherUserId,
-                                    email: anotherUserEmail,
-                                    messagingToken: anotherUserMessagingToken,
-                                },
-                            });
+                // Set member data
+                db.ref(`users/${currentUser.uid}/dialogs`)
+                    .child(currentDialogId)
+                    .set({
+                        dialogId: currentDialogId,
+                        member: {
+                            id: anotherUserId,
+                            email: anotherUserEmail,
+                        },
                     });
             });
     } catch (error) {
@@ -130,22 +123,15 @@ const addDialogToAnotherUser = (email) => async (dispatch, getState) => {
             .on('child_added',  snapshot => {
                 const anotherUserId = snapshot.key;
 
-                // Get user messaging token
-                db.ref(`users/${currentUser.uid}/messagingToken`)
-                    .on('value', snapshot => {
-                        const currentUserMessagingToken = snapshot.val();
-
-                        // Set member data
-                        db.ref(`users/${anotherUserId}/dialogs`)
-                            .child(currentDialogId)
-                            .set({
-                                dialogId: currentDialogId,
-                                member: {
-                                    id: currentUser.uid,
-                                    email: currentUser.email,
-                                    messagingToken: currentUserMessagingToken,
-                                },
-                            });
+                // Set member data
+                db.ref(`users/${anotherUserId}/dialogs`)
+                    .child(currentDialogId)
+                    .set({
+                        dialogId: currentDialogId,
+                        member: {
+                            id: currentUser.uid,
+                            email: currentUser.email,
+                        },
                     });
             });
     } catch (error) {
