@@ -4,8 +4,10 @@
     "theme_color": "#000000",
     "background_color": "#ffffff",
     "display": "standalone",
+    "url": "https://email-chat.tuychin.ru/",
     "scope": "/",
     "start_url": "/",
+    "lang": "Russian",
     "icons": [
         {
             "src": "assets/favicon.ico",
@@ -37,6 +39,18 @@
             "sizes": "1024x1024",
             "type": "image/png",
             "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "assets/screenshot1.png",
+            "sizes": "1280x800",
+            "type": "image/png"
+        },
+        {
+            "src": "assets/screenshot2.png",
+            "sizes": "750x1334",
+            "type": "image/png"
         }
     ]
 }
