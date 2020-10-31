@@ -48,7 +48,7 @@ module.exports = {
         }),
         // Workbox SW will use manifest for precache
         new WorkboxPlugin.InjectManifest({
-            swSrc: './firebase-sw.js',
+            swSrc: './sw.js',
             include: [/\.html$/, /\.js$/, /\.svg$/, /\.css$/, /\.png$/, /\.ico$/],
             maximumFileSizeToCacheInBytes: 50000000,
         }),

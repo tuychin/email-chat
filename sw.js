@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable no-undef */
 
 // WORKBOX PRECACHING
@@ -12,7 +13,7 @@ workbox.setConfig({
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();
 
-// Auto cache
+// Auto cache injected WB_MANIFEST from webpack.config
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
 

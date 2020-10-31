@@ -15,7 +15,7 @@ firebase.initializeApp(firebaseConfig);
 
 // REGISTER FIREBASE SW WITH WORKBOX
 if ('serviceWorker' in navigator) {
-    const wb = new Workbox('firebase-sw.js');
+    const wb = new Workbox('sw.js');
 
     wb.register()
         .then((registration) => {
@@ -61,34 +61,38 @@ export const updateMessagingToken = async () => {
 }
 
 export const checkNotificationsPermission = async () => {
-    try {
-        const messaging = firebase.messaging();
-        await messaging.requestPermission();
+    if (Notification.permission === 'default') {
+        try {
+            const messaging = firebase.messaging();
+            await messaging.requestPermission();
 
-        updateMessagingToken();
-    } catch (error) {
-        console.error(`[Firebase messaging] ${error}`);
+            updateMessagingToken();
+        } catch (error) {
+            console.error(`[Firebase messaging] ${error}`);
+        }
     }
 }
 
 export const sendNotificationToUser = async ({title, body, link, userId}) => {
+    const notificationData = JSON.stringify({
+        message: {
+            notification: {
+                title,
+                body,
+                click_action: link,
+                icon: '/assets/icon-512x512.png',
+            },
+        },
+        userId,
+    });
+
     const response = await fetch('https://tuychin.space/api/notification', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            message: {
-                notification: {
-                    title,
-                    body,
-                    click_action: link,
-                    icon: '/assets/icon-512x512.png',
-                },
-            },
-            userId,
-        })
+        body: notificationData,
     });
 
-    console.log(`[Firebase messaging] Notification sent. Status - ${response.status}`);
+    console.log(`[Firebase messaging] Notification sent. Status - ${response.status}`, notificationData);
 
     return response;
 }
