@@ -11,7 +11,7 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
 import {
-    checkNotificationsPermission,
+    sendNotificationTokenToServer,
     auth,
     db
 } from './services/firebase';
@@ -27,8 +27,23 @@ export default class App extends Component {
     };
 
     async componentDidMount() {
+        auth().onAuthStateChanged((user) => {
+            if (user) {
+                sendNotificationTokenToServer();
+
+                this.setState({
+                    authenticated: true,
+                    loading: false,
+                });
+            } else {
+                this.setState({
+                    authenticated: false,
+                    loading: false,
+                });
+            }
+        });
+
         await checkConfirmEmail();
-        await this.checkAuth();
         await this.importUserTheme();
     }
 
@@ -44,24 +59,6 @@ export default class App extends Component {
                         }
 
                     });
-            }
-        });
-    }
-
-    checkAuth = () => {
-        auth().onAuthStateChanged((user) => {
-            if (user) {
-                checkNotificationsPermission();
-
-                this.setState({
-                    authenticated: true,
-                    loading: false,
-                });
-            } else {
-                this.setState({
-                    authenticated: false,
-                    loading: false,
-                });
             }
         });
     }

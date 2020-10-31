@@ -17,6 +17,16 @@ firebase.initializeApp(firebaseConfig);
 if ('serviceWorker' in navigator) {
     const wb = new Workbox('sw.js');
 
+    wb.addEventListener('installed', event => {
+        if (event.isUpdate) {
+            if (confirm(`Приложение обновлено. Перезагрузить, чтобы изменения вступили в силу?`)) {
+                window.location.reload();
+            }
+        } else {
+            console.log(`[service-worker]: The app is offline-ready`)
+        }
+    });
+
     wb.register()
         .then((registration) => {
             console.log('[Firebase SW] Registration successful with scope: ', registration.scope);
@@ -43,10 +53,10 @@ if ('serviceWorker' in navigator) {
     console.warn('[Firebase SW] Service worker is not supported');
 }
 
-export const updateMessagingToken = async () => {
+const requestNotificationPermissionToken = () => firebase.messaging().getToken();
+export const sendNotificationTokenToServer = async () => {
     try {
-        const messaging = firebase.messaging();
-        const token = await messaging.getToken();
+        const token = await requestNotificationPermissionToken();
         const currentUserId = firebase.auth().currentUser.uid;
 
         await db.ref(`users/${currentUserId}`)
@@ -57,19 +67,6 @@ export const updateMessagingToken = async () => {
         console.log(`[Firebase messaging] Token sent to server: ${token}`);
     } catch (error) {
         console.error(`[Firebase messaging] ${error}`);
-    }
-}
-
-export const checkNotificationsPermission = async () => {
-    if (Notification.permission === 'default') {
-        try {
-            const messaging = firebase.messaging();
-            await messaging.requestPermission();
-
-            updateMessagingToken();
-        } catch (error) {
-            console.error(`[Firebase messaging] ${error}`);
-        }
     }
 }
 
