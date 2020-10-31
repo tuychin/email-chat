@@ -63,7 +63,7 @@ class MessageHistory extends PureComponent {
         const currentDialog = dialogs.find(dialog => dialog.dialogId === currentDialogId);
         
         if (this.сheckNoSpacesInMessageText(content)) {
-            const currentDialogLink = location.href;
+            const currentDialogLink = `${location.origin}/#${currentDialogId}`;
 
             await sendMessage(content);
             await sendNotificationToUser({
