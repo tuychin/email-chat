@@ -16,6 +16,9 @@ workbox.core.clientsClaim();
 // Auto cache injected WB_MANIFEST from webpack.config
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST);
 
+// Cache-first strategy
+workbox.routing.registerRoute(/(http[s]?:\/\/)?([^\/\s]+\/)/, workbox.strategies.cacheFirst());
+
 
 
 // FCM WEB PUSH NOTIFICATION
