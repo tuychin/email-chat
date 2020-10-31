@@ -16,6 +16,7 @@ import {
     closeMessages,
 } from '../../pages/Chat/chatSlice';
 
+import {clearUrlHash} from '../../utils/clearUrl';
 import {sendNotificationToUser} from '../../services/firebase';
 
 import './message-history.scss';
@@ -86,7 +87,7 @@ class MessageHistory extends PureComponent {
     handleCloseMessages = () => {
         const {closeMessages} = this.props;
 
-        location.hash = '';
+        clearUrlHash();
         closeMessages();
     }
 

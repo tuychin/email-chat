@@ -16,6 +16,7 @@ import {
     db
 } from './services/firebase';
 import {checkConfirmEmail} from './utils/auth';
+import {clearUrlSearch} from './utils/clearUrl';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './app.scss';
@@ -29,6 +30,7 @@ export default class App extends Component {
     async componentDidMount() {
         auth().onAuthStateChanged((user) => {
             if (user) {
+                clearUrlSearch();
                 sendNotificationTokenToServer();
 
                 this.setState({

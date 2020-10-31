@@ -53,7 +53,7 @@ class Dialogs extends PureComponent {
         openDialog(dialogId, memberName);
     }
 
-    setUrlHash = dialogId => location.href = `${location.origin}/#${dialogId}`;
+    setUrlHash = hash => location.hash = hash;
 
     renderDialogsPlaceholder = () => {
         const {dialogs} = this.props;
