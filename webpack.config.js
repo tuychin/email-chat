@@ -49,7 +49,6 @@ module.exports = {
         // Workbox SW will use manifest for precache
         new WorkboxPlugin.InjectManifest({
             swSrc: './sw.js',
-            include: [/\.html$/, /\.js$/, /\.svg$/, /\.css$/, /\.png$/, /\.ico$/],
             maximumFileSizeToCacheInBytes: 50000000,
         }),
         new webpack.optimize.LimitChunkCountPlugin({
