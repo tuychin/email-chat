@@ -53,10 +53,10 @@ if ('serviceWorker' in navigator) {
     console.warn('[Firebase SW] Service worker is not supported');
 }
 
-const requestNotificationPermissionToken = () => firebase.messaging().getToken();
-export const sendNotificationTokenToServer = async () => {
+const sendMessagingTokenToServer = async () => {
     try {
-        const token = await requestNotificationPermissionToken();
+        const messaging = firebase.messaging();
+        const token = await messaging.getToken();
         const currentUserId = firebase.auth().currentUser.uid;
 
         await db.ref(`users/${currentUserId}`)
@@ -65,6 +65,21 @@ export const sendNotificationTokenToServer = async () => {
             });
 
         console.log(`[Firebase messaging] Token sent to server: ${token}`);
+    } catch (error) {
+        console.error(`[Firebase messaging] ${error}`);
+    }
+}
+
+export const checkNotificationsPermission = () => {
+    try {
+        const messaging = firebase.messaging();
+        const isPermissionGranted = Notification.permission === 'granted';
+
+        isPermissionGranted && sendMessagingTokenToServer();
+        setTimeout(async () => {
+            await messaging.requestPermission();
+            !isPermissionGranted && sendMessagingTokenToServer();
+        }, 3000);
     } catch (error) {
         console.error(`[Firebase messaging] ${error}`);
     }

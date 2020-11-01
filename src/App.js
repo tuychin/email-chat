@@ -11,7 +11,7 @@ import Chat from './pages/Chat';
 import Login from './pages/Login';
 import Loader from './components/Loader';
 import {
-    sendNotificationTokenToServer,
+    checkNotificationsPermission,
     auth,
     db
 } from './services/firebase';
@@ -31,7 +31,7 @@ export default class App extends Component {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 clearUrlSearch();
-                sendNotificationTokenToServer();
+                checkNotificationsPermission();
 
                 this.setState({
                     authenticated: true,
