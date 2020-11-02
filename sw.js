@@ -23,9 +23,38 @@ workbox.routing.registerRoute(
 );
 
 
+// SW ON NOTIFICATION CLICK
+self.addEventListener('notificationclick', (evt) => {
+    evt.notification.close();
+    // see if the current is open and if it is focus it
+    // otherwise open new tab
+    evt.waitUntil(
+        self.clients.matchAll()
+            .then(async (clientList) => {
+                console.log(evt.notification);
+                if (clientList.length > 0) {
+                    const link = evt.notification.data.clickAction || evt.notification.data.FCM_MSG.notification.click_action;
+                    const isCurrentUrl = clientList[0].url === link;
+
+                    await clientList[0].focus();
+
+                    if (!isCurrentUrl) {
+                        await clientList[0].navigate(link);
+                        await clientList[0].navigate(link);
+                    }
+
+                    return;
+                }
+                
+                return self.clients.openWindow(link);
+            })
+    );
+});
+
+
 // FCM WEB PUSH NOTIFICATION
-importScripts('https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/8.0.0/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/7.13.2/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/7.13.2/firebase-messaging.js');
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC7Xblmorl6POclj6xzQI_-WrlCLFO7CYE',
@@ -54,23 +83,4 @@ messaging.setBackgroundMessageHandler((payload) => {
 
     self.registration.showNotification(title,  options);
     self.registration.hideNotification();
-});
-
-// SW ON NOTIFICATION CLICK
-self.addEventListener('notificationclick', (evt) => {
-    evt.notification.close();
-    // see if the current is open and if it is focus it
-    // otherwise open new tab
-    evt.waitUntil(
-        self.clients.matchAll()
-            .then(async (clientList) => {
-                if (clientList.length > 0) {
-                    await clientList[0].focus();
-
-                    return clientList[0].navigate(evt.notification.data.clickAction);
-                }
-                
-                return self.clients.openWindow(evt.notification.data.clickAction);
-            })
-    );
 });
