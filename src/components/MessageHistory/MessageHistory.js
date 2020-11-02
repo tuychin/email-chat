@@ -186,7 +186,7 @@ class MessageHistory extends PureComponent {
                                         <polyline
                                             fill="none"
                                             stroke="currentColor"
-                                            strokeWidth="8"
+                                            strokeWidth="5"
                                             strokeLinecap="round"
                                             strokeLinejoin="round"
                                             points="45.63,75.8 0.375,38.087 45.63,0.375"
