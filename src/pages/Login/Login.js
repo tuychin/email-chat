@@ -77,7 +77,13 @@ class Login extends PureComponent {
             showConfirm ? <Confirm email={email} /> : (
                 <div className={block.name()}>
                     <div className={block.elem('title')}>
-                        <h1 className="text-center">Всё что вам нужно, чтобы начать общение - электронная почта!</h1>
+                        <h1>Всё что вам нужно, чтобы начать общение - электронная почта!</h1>
+                        <p>
+                            Это некомерческий, личный проект. Автор проекта не отвечает за конфиденциальность данных, которые вы можете оставить на этом сайте.
+                        </p>
+                        <p>
+                            Автор: <a href="https://github.com/tuychin">Туйчин Равиль</a>
+                        </p>
                     </div>
 
                     <form className={block.elem('form')} onSubmit={this.handleSubmit}>
